@@ -27,6 +27,44 @@
 .contact{background:radial-gradient(circle at 80% 15%,rgba(199,165,106,.12),transparent 25%),linear-gradient(135deg,#f4f0e7,#eee8dc)}
 .search-strip{border-top:2px solid rgba(199,165,106,.55)}
 @media(max-width:800px){.hero:after{background:radial-gradient(circle at 80% 20%,rgba(199,165,106,.13),transparent 30%)}}
+/* Appearance switch: System / Light / Dark */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.theme-control{display:flex;align-items:center}
+.theme-control select{appearance:none;-webkit-appearance:none;border:1px solid #d9d5cc;background:rgba(255,255,255,.72);color:var(--ink);border-radius:999px;padding:9px 28px 9px 12px;font:700 10px 'DM Sans',sans-serif;cursor:pointer;outline:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 12px) 13px,calc(100% - 8px) 13px;background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+.theme-control select:focus{box-shadow:0 0 0 3px rgba(181,139,69,.14)}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="dark"] body{--ink:#f6f1e7;--ink-2:#cbd5e1;--cream:#0b1018;--warm:#141a23;--paper:#111823;--line:#29313d;--shadow:0 20px 60px rgba(0,0,0,.35);background:var(--cream);color:var(--ink)}
+html[data-theme="dark"] .topbar{background:rgba(11,16,24,.84);border-bottom-color:rgba(255,255,255,.08)}
+html[data-theme="dark"] .brand small,html[data-theme="dark"] .nav a,html[data-theme="dark"] .footer-links a{color:#9da7b5}
+html[data-theme="dark"] .nav a:hover,html[data-theme="dark"] .footer-links a:hover{color:#fff}
+html[data-theme="dark"] .nav-cta{color:#f6f1e7;border-color:#d6c49f}
+html[data-theme="dark"] .theme-control select{background-color:#151d29;color:#f6f1e7;border-color:#384454}
+html[data-theme="dark"] .hero{background:radial-gradient(circle at 15% 10%,rgba(199,165,106,.13),transparent 30%),linear-gradient(120deg,#0b1018,#151b25)}
+html[data-theme="dark"] .hero h1 em,html[data-theme="dark"] .section h2 em,html[data-theme="dark"] .process-band h2 em,html[data-theme="dark"] .contact h2 em{color:#d5bd8f}
+html[data-theme="dark"] .hero-copy>p,html[data-theme="dark"] .section-heading>p,html[data-theme="dark"] .story-copy>p{color:#a8b0bb}
+html[data-theme="dark"] .btn-ghost{color:#f6f1e7;border-color:#46515f}
+html[data-theme="dark"] .hero-proof{border-top-color:#303845}
+html[data-theme="dark"] .proof-item span,html[data-theme="dark"] .result-count{color:#9da6b2}
+html[data-theme="dark"] .search-strip{background:#121923;border-color:#2a3441;box-shadow:0 16px 42px rgba(0,0,0,.32)}
+html[data-theme="dark"] .search-form select,html[data-theme="dark"] .field-grid select,html[data-theme="dark"] .field-grid input,html[data-theme="dark"] .enquiry-form textarea{background:#0e151f;color:#f6f1e7;border-color:#34404e}
+html[data-theme="dark"] .search-form label span,html[data-theme="dark"] .field-grid label span,html[data-theme="dark"] .enquiry-form>label span{color:#9da6b2}
+html[data-theme="dark"] .property-card{background:#121923;border-color:#293340}
+html[data-theme="dark"] .property-body p,html[data-theme="dark"] .property-meta{color:#9ba5b1}
+html[data-theme="dark"] .property-meta{border-top-color:#293340}
+html[data-theme="dark"] .card-action a{color:#f6f1e7}
+html[data-theme="dark"] .story{background:#121923}
+html[data-theme="dark"] .feature-list>div{border-bottom-color:#303845}
+html[data-theme="dark"] .feature-list small{color:#9da6b2}
+html[data-theme="dark"] .contact{background:radial-gradient(circle at 80% 15%,rgba(199,165,106,.08),transparent 25%),linear-gradient(135deg,#121923,#0e151e)}
+html[data-theme="dark"] .contact-card{background:rgba(20,27,37,.72);border-color:#303845}
+html[data-theme="dark"] .contact-details strong{color:#f6f1e7}
+html[data-theme="dark"] .contact-details span,html[data-theme="dark"] .form-note{color:#8f99a6}
+html[data-theme="dark"] .enquiry-form{background:#121923;border-color:#303845;box-shadow:0 15px 45px rgba(0,0,0,.25)}
+html[data-theme="dark"] .footer{background:#0b1018;border-top-color:#29313d}
+html[data-theme="dark"] .footer-note{color:#7f8997}
+html[data-theme="dark"] .nav.open{background:#121923;border-color:#303845}
+@media(max-width:800px){.theme-control{margin-left:auto}.menu-btn{margin-left:0}.theme-control select{padding-top:8px;padding-bottom:8px}}
+
 
   </style>
 </head>
@@ -47,6 +85,7 @@
         <a href="#contact">Contact</a>
       </nav>
       <a class="nav-cta" href="#contact">Enquire now <span>↗</span></a>
+      <label class="theme-control" title="Choose appearance"><span class="sr-only">Appearance</span><select id="themeSelect" aria-label="Appearance"><option value="system">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
       <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">☰</button>
     </header>
 
@@ -188,6 +227,25 @@
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script>
+
+const themeSelect = document.getElementById('themeSelect');
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyTheme(mode){
+  const resolved = mode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : mode;
+  document.documentElement.dataset.theme = resolved;
+  themeSelect.value = mode;
+  if(themeMeta) themeMeta.setAttribute('content', resolved === 'dark' ? '#0b1018' : '#f7f6f2');
+  try{localStorage.setItem('ss-properties-theme', mode)}catch(_){}
+}
+let savedTheme = 'system';
+try{savedTheme = localStorage.getItem('ss-properties-theme') || 'system'}catch(_){}
+applyTheme(savedTheme);
+themeSelect.addEventListener('change',()=>applyTheme(themeSelect.value));
+systemTheme.addEventListener?.('change',()=>{if(themeSelect.value==='system') applyTheme('system')});
+
+
 const properties = [
   {id:1,purpose:'sale',type:'apartment',title:'Skyline Residence',location:'Premium city apartment',price:'₹ 1.28 Cr',beds:3,baths:2,area:'1,420 sq ft',image:'image-1'},
   {id:2,purpose:'rent',type:'apartment',title:'Parkside Home',location:'Quiet residential pocket',price:'₹ 42,000 / month',beds:2,baths:2,area:'1,080 sq ft',image:'image-2'},

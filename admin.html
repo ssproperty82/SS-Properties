@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SS Properties | Admin</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#07101a;--surface:#0e1a27;--surface2:#132233;--text:#f6f0e5;--muted:#9da9b5;--line:rgba(255,255,255,.1);--gold:#efc36e;--danger:#ef7d7d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}button,input,select{font:inherit}
+.wrap{width:min(1180px,calc(100% - 32px));margin:auto}.login{min-height:100vh;display:grid;place-items:center;padding:20px}.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:0 25px 70px #0006}.login-card{width:min(430px,100%)}h1,h2,h3{margin-top:0}.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}.mark{width:44px;height:44px;border:1px solid #efc36e99;border-radius:12px;display:grid;place-items:center;color:var(--gold);font-weight:800}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:800}h1{font-size:30px;margin:8px 0}p{color:var(--muted);line-height:1.6;font-size:13px}.field{margin:15px 0}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.field input,.field select{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:#091521;color:var(--text);outline:0}.btn{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cursor:pointer}.gold{background:var(--gold);color:#08111a}.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}.danger{color:var(--danger)}.error{color:var(--danger);font-size:12px;min-height:18px}.hidden{display:none!important}
+header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:blur(15px);position:sticky;top:0;z-index:5}.head{height:72px;display:flex;align-items:center;justify-content:space-between;gap:15px}.head .brand{margin:0}.user{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px}.main{padding:35px 0}.top{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:25px}.top h1{font-family:Georgia,serif;font-size:44px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}.stat strong{font-size:28px;display:block}.stat span{font-size:10px;color:var(--muted)}.tabs{display:flex;gap:8px;margin-bottom:15px}.tab{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 13px;border-radius:999px;cursor:pointer;font-size:11px}.tab.active{background:var(--gold);color:#08111a;border-color:var(--gold)}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}.panel-head{padding:18px;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:11px;vertical-align:top}th{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}td small{display:block;color:var(--muted);margin-top:4px}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#efc36e22;color:var(--gold);font-size:9px}.empty{text-align:center;padding:40px;color:var(--muted)}@media(max-width:650px){.stats{grid-template-columns:1fr}.top{align-items:start;flex-direction:column}.top h1{font-size:35px}.user span{display:none}}
+</style>
+</head>
+<body>
+<section id="loginView" class="login">
+  <div class="card login-card">
+    <div class="brand"><div class="mark">SS</div><div><strong>SS Properties</strong><small style="display:block;color:var(--muted);font-size:10px">Private Admin</small></div></div>
+    <div class="eyebrow">Owner access</div><h1>Welcome back.</h1>
+    <p>Sign in with the business account to manage enquiries and properties.</p>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input id="email" type="email" value="ssproperty82@gmail.com" required autocomplete="email"></div>
+      <div class="field"><label>Password</label><input id="password" type="password" required autocomplete="current-password"></div>
+      <div id="loginError" class="error"></div>
+      <button class="btn gold" style="width:100%" type="submit">Sign in →</button>
+    </form>
+  </div>
+</section>
+
+<section id="appView" class="hidden">
+<header><div class="wrap head"><div class="brand"><div class="mark">SS</div><div><strong>SS Properties</strong><small style="display:block;color:var(--muted);font-size:9px">Admin Dashboard</small></div></div><div class="user"><span id="userEmail"></span><button id="logout" class="btn ghost">Sign out</button></div></div></header>
+<main class="wrap main">
+  <div class="top"><div><div class="eyebrow">Business control center</div><h1>Dashboard</h1><p style="margin:0">Manage incoming leads and your property inventory.</p></div></div>
+  <div class="stats">
+    <div class="card stat"><strong id="newCount">—</strong><span>New enquiries</span></div>
+    <div class="card stat"><strong id="totalCount">—</strong><span>Total enquiries</span></div>
+    <div class="card stat"><strong id="propertyCount">—</strong><span>Available properties</span></div>
+  </div>
+  <div class="tabs"><button class="tab active" data-tab="enquiries">Enquiries</button><button class="tab" data-tab="properties">Properties</button></div>
+  <div id="enquiriesPanel" class="panel"><div class="panel-head"><strong>Recent enquiries</strong><button id="refresh" class="btn ghost">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Requirement</th><th>Message</th><th>Status</th></tr></thead><tbody id="enquiriesBody"></tbody></table></div></div>
+  <div id="propertiesPanel" class="panel hidden"><div class="panel-head"><strong>Properties</strong><button id="refreshProps" class="btn ghost">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Property</th><th>Location</th><th>Type</th><th>Price</th><th>Status</th></tr></thead><tbody id="propertiesBody"></tbody></table></div></div>
+</main>
+</section>
+
+<script>
+const SUPABASE_URL='https://axduezmiyyznpmmyailf.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_o5agVKlb926Ezy45f16Lw_KxDkfos3'.replace('Ezy','Ezy');
+const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+
+const loginView=document.getElementById('loginView'),appView=document.getElementById('appView'),loginError=document.getElementById('loginError');
+
+async function loadDashboard(){
+  const {data:{session}}=await supabase.auth.getSession();
+  if(!session){loginView.classList.remove('hidden');appView.classList.add('hidden');return}
+  loginView.classList.add('hidden');appView.classList.remove('hidden');
+  document.getElementById('userEmail').textContent=session.user.email||'';
+  await Promise.all([loadEnquiries(),loadProperties()]);
+}
+async function loadEnquiries(){
+  const {data,error}=await supabase.from('enquiries').select('id,name,phone,email,purpose,property_type,message,status,created_at').order('created_at',{ascending:false});
+  if(error){document.getElementById('enquiriesBody').innerHTML='<tr><td colspan="5" class="empty">Could not load enquiries. Check the admin RLS policy.</td></tr>';console.error(error);return}
+  document.getElementById('newCount').textContent=data.filter(x=>x.status==='new').length;
+  document.getElementById('totalCount').textContent=data.length;
+  document.getElementById('enquiriesBody').innerHTML=data.length?data.map(x=>'<tr><td>'+new Date(x.created_at).toLocaleString()+'</td><td><strong>'+esc(x.name)+'</strong><small>'+esc(x.phone)+(x.email?' · '+esc(x.email):'')+'</small></td><td>'+esc(x.purpose||'—')+'<small>'+esc(x.property_type||'—')+'</small></td><td>'+esc(x.message||'—')+'</td><td><span class="badge">'+esc(x.status||'new')+'</span></td></tr>').join(''):'<tr><td colspan="5" class="empty">No enquiries yet.</td></tr>';
+}
+async function loadProperties(){
+  const {data,error}=await supabase.from('properties').select('id,title,location,property_type,price_display,status').order('created_at',{ascending:false});
+  if(error){document.getElementById('propertiesBody').innerHTML='<tr><td colspan="5" class="empty">Could not load properties. Check the admin RLS policy.</td></tr>';console.error(error);return}
+  document.getElementById('propertyCount').textContent=data.filter(x=>x.status==='available').length;
+  document.getElementById('propertiesBody').innerHTML=data.length?data.map(x=>'<tr><td><strong>'+esc(x.title)+'</strong></td><td>'+esc(x.location)+'</td><td>'+esc(x.property_type)+'</td><td>'+esc(x.price_display||x.price||'—')+'</td><td><span class="badge">'+esc(x.status)+'</span></td></tr>').join(''):'<tr><td colspan="5" class="empty">No properties yet.</td></tr>';
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();loginError.textContent='';const b=e.target.querySelector('button');b.disabled=true;b.textContent='Signing in…';const {error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});if(error)loginError.textContent=error.message;else await loadDashboard();b.disabled=false;b.textContent='Sign in →'});
+document.getElementById('logout').addEventListener('click',()=>supabase.auth.signOut());
+document.getElementById('refresh').addEventListener('click',loadEnquiries);
+document.getElementById('refreshProps').addEventListener('click',loadProperties);
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('enquiriesPanel').classList.toggle('hidden',b.dataset.tab!=='enquiries');document.getElementById('propertiesPanel').classList.toggle('hidden',b.dataset.tab!=='properties')}));
+supabase.auth.onAuthStateChange(()=>loadDashboard());
+loadDashboard();
+</script>
+</body>
+</html>

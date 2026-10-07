@@ -731,6 +731,11 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    // Supabase connection for the public SS Properties enquiry form.
+    // The publishable key is safe to use in browser code; database access is protected by RLS.
+    const SUPABASE_URL = 'https://axduezmiyznpmyailf.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3';
+
     const properties = [
       {id:1,purpose:'sale',type:'apartment',title:'2 BHK Apartment',location:'Thane West, Thane',price:'₹ 1.10 Cr',beds:'2 Beds',baths:'2 Baths',area:'950 sq.ft.',image:'https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=86'},
       {id:2,purpose:'sale',type:'villa',title:'3 BHK Independent House',location:'Balkum, Thane',price:'₹ 2.45 Cr',beds:'3 Beds',baths:'3 Baths',area:'1,800 sq.ft.',image:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=86'},
@@ -887,11 +892,49 @@
     modal.addEventListener('click', e => { if(e.target === modal) modal.classList.remove('show'); });
     document.addEventListener('keydown', e => { if(e.key === 'Escape') modal.classList.remove('show'); });
 
-    enquiryForm.addEventListener('submit', e => {
+    enquiryForm.addEventListener('submit', async e => {
       e.preventDefault();
-      modal.classList.remove('show');
-      e.target.reset();
-      showToast('Enquiry captured — connect your backend/WhatsApp endpoint to receive it.');
+      const submitButton = e.target.querySelector('button[type="submit"]');
+      const originalText = submitButton.textContent;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending…';
+
+      const formData = new FormData(e.target);
+      const enquiry = {
+        name: String(formData.get('name') || '').trim(),
+        phone: String(formData.get('phone') || '').trim(),
+        purpose: String(formData.get('purpose') || '').trim(),
+        property_type: String(formData.get('type') || '').trim(),
+        message: String(formData.get('message') || '').trim()
+      };
+
+      try {
+        const response = await fetch(SUPABASE_URL + '/rest/v1/enquiries', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_PUBLISHABLE_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(enquiry)
+        });
+
+        if (!response.ok) {
+          const details = await response.text();
+          throw new Error(details || 'Unable to save enquiry');
+        }
+
+        modal.classList.remove('show');
+        e.target.reset();
+        showToast('Enquiry sent successfully. We’ll get back to you soon.');
+      } catch (error) {
+        console.error('SS Properties enquiry error:', error);
+        showToast('Could not send the enquiry. Please try WhatsApp or call us.');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+      }
     });
 
     function showToast(message){

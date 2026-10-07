@@ -50,8 +50,8 @@ const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KE
 
 const loginView=document.getElementById('loginView'),appView=document.getElementById('appView'),loginError=document.getElementById('loginError');
 
-async function loadDashboard(){
-  const {data:{session}}=await supabase.auth.getSession();
+async function loadDashboard(sessionOverride=null){
+  const session = sessionOverride || (await supabase.auth.getSession()).data.session;
   if(!session){loginView.classList.remove('hidden');appView.classList.add('hidden');return}
   loginView.classList.add('hidden');appView.classList.remove('hidden');
   document.getElementById('userEmail').textContent=session.user.email||'';
@@ -71,12 +71,47 @@ async function loadProperties(){
   document.getElementById('propertiesBody').innerHTML=data.length?data.map(x=>'<tr><td><strong>'+esc(x.title)+'</strong></td><td>'+esc(x.location)+'</td><td>'+esc(x.property_type)+'</td><td>'+esc(x.price_display||x.price||'—')+'</td><td><span class="badge">'+esc(x.status)+'</span></td></tr>').join(''):'<tr><td colspan="5" class="empty">No properties yet.</td></tr>';
 }
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();loginError.textContent='';const b=e.target.querySelector('button');b.disabled=true;b.textContent='Signing in…';const {error}=await supabase.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});if(error)loginError.textContent=error.message;else await loadDashboard();b.disabled=false;b.textContent='Sign in →'});
+document.getElementById('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  loginError.textContent='';
+  const b=e.target.querySelector('button');
+  b.disabled=true;
+  b.textContent='Signing in…';
+  try{
+    const {data,error}=await supabase.auth.signInWithPassword({
+      email:document.getElementById('email').value.trim(),
+      password:document.getElementById('password').value
+    });
+    if(error){
+      loginError.textContent=error.message;
+      b.disabled=false;
+      b.textContent='Sign in →';
+      return;
+    }
+    if(data.session) await loadDashboard(data.session);
+  }catch(err){
+    console.error(err);
+    loginError.textContent=err?.message||'Sign-in failed. Please try again.';
+  }finally{
+    b.disabled=false;
+    b.textContent='Sign in →';
+  }
+});
 document.getElementById('logout').addEventListener('click',()=>supabase.auth.signOut());
 document.getElementById('refresh').addEventListener('click',loadEnquiries);
 document.getElementById('refreshProps').addEventListener('click',loadProperties);
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('enquiriesPanel').classList.toggle('hidden',b.dataset.tab!=='enquiries');document.getElementById('propertiesPanel').classList.toggle('hidden',b.dataset.tab!=='properties')}));
-supabase.auth.onAuthStateChange(()=>loadDashboard());
+supabase.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'){
+    loginView.classList.remove('hidden');
+    appView.classList.add('hidden');
+    document.getElementById('userEmail').textContent='';
+    return;
+  }
+  if(event==='SIGNED_IN' && session){
+    loadDashboard(session);
+  }
+});
 loadDashboard();
 </script>
 </body>

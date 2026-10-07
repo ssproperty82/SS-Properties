@@ -50,12 +50,29 @@ const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KE
 
 const loginView=document.getElementById('loginView'),appView=document.getElementById('appView'),loginError=document.getElementById('loginError');
 
-async function loadDashboard(sessionOverride=null){
-  const session = sessionOverride || (await supabase.auth.getSession()).data.session;
-  if(!session){loginView.classList.remove('hidden');appView.classList.add('hidden');return}
-  loginView.classList.add('hidden');appView.classList.remove('hidden');
+async function showLoggedIn(session){
+  if(!session){
+    loginView.classList.remove('hidden');
+    appView.classList.add('hidden');
+    document.getElementById('userEmail').textContent='';
+    return;
+  }
+  loginView.classList.add('hidden');
+  appView.classList.remove('hidden');
   document.getElementById('userEmail').textContent=session.user.email||'';
   await Promise.all([loadEnquiries(),loadProperties()]);
+}
+
+async function loadDashboard(){
+  const {data,error}=await supabase.auth.getSession();
+  if(error){
+    console.error('getSession error:',error);
+    loginView.classList.remove('hidden');
+    appView.classList.add('hidden');
+    loginError.textContent=error.message;
+    return;
+  }
+  await showLoggedIn(data.session);
 }
 async function loadEnquiries(){
   const {data,error}=await supabase.from('enquiries').select('id,name,phone,email,purpose,property_type,message,status,created_at').order('created_at',{ascending:false});
@@ -88,7 +105,7 @@ document.getElementById('loginForm').addEventListener('submit',async e=>{
       b.textContent='Sign in →';
       return;
     }
-    if(data.session) await loadDashboard(data.session);
+    if(data.session) await showLoggedIn(data.session);
   }catch(err){
     console.error(err);
     loginError.textContent=err?.message||'Sign-in failed. Please try again.';
@@ -103,13 +120,7 @@ document.getElementById('refreshProps').addEventListener('click',loadProperties)
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('enquiriesPanel').classList.toggle('hidden',b.dataset.tab!=='enquiries');document.getElementById('propertiesPanel').classList.toggle('hidden',b.dataset.tab!=='properties')}));
 supabase.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_OUT'){
-    loginView.classList.remove('hidden');
-    appView.classList.add('hidden');
-    document.getElementById('userEmail').textContent='';
-    return;
-  }
-  if(event==='SIGNED_IN' && session){
-    loadDashboard(session);
+    showLoggedIn(null);
   }
 });
 loadDashboard();

@@ -25,11 +25,6 @@
           "cameraPermission": false
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "SET_AFTER_RUNNING_EAS_INIT"
-      }
-    }
+    ]
   }
 }

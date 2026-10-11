@@ -1168,6 +1168,7 @@ const styles = StyleSheet.create({
   trustLabel: { color: C.soft, fontSize: 9, marginTop: 3 },
   trustDivider: { height: 30, width: 1, backgroundColor: C.line },
   sectionBlock: { paddingHorizontal: 16, paddingTop: 23, gap: 12 },
+  loading: { paddingVertical: 30 },
   sectionTitleWrap: { marginBottom: 8, gap: 5 },
   sectionTitle: { color: C.text, fontSize: 22, fontWeight: '800', letterSpacing: -0.4 },
   sectionSubtitle: { color: C.muted, fontSize: 12, lineHeight: 18 },

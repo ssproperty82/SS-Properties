@@ -13,9 +13,11 @@ import {
   Text,
   TextInput,
   View,
+  StatusBar as NativeStatusBar,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Session } from '@supabase/supabase-js';
@@ -1095,7 +1097,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.app}>
+      <SafeAreaView edges={['left', 'right', 'bottom']} style={styles.app}>
       <StatusBar style="light" />
       <View style={styles.topbar}>
         <Pressable style={styles.brand} onPress={() => setScreen('home')} accessibilityRole="button" accessibilityLabel="SS Properties home">
@@ -1122,10 +1124,10 @@ export default function App() {
         </View>
       </ScrollView>
       <View style={styles.bottomNav}>
-        <NavItem label="Explore" glyph="⌂" active={screen === 'home' || screen === 'detail'} onPress={() => setScreen('home')} />
-        <NavItem label="Saved" glyph="♡" active={screen === 'saved'} onPress={() => setScreen('saved')} />
-        <NavItem label="Enquire" glyph="✉" active={screen === 'enquiry'} onPress={() => startEnquiry(null)} />
-        <NavItem label={isOwner ? 'Owner' : 'Account'} glyph={isOwner ? '▦' : '●'} active={screen === 'account' || screen === 'owner'} onPress={() => navigate('account')} />
+        <NavItem label="Explore" icon="home-outline" active={screen === 'home' || screen === 'detail'} onPress={() => setScreen('home')} />
+        <NavItem label="Saved" icon="heart-outline" active={screen === 'saved'} onPress={() => setScreen('saved')} />
+        <NavItem label="Enquire" icon="mail-outline" active={screen === 'enquiry'} onPress={() => startEnquiry(null)} />
+        <NavItem label={isOwner ? 'Owner' : 'Account'} icon={isOwner ? 'grid-outline' : 'person-circle-outline'} active={screen === 'account' || screen === 'owner'} onPress={() => navigate('account')} />
       </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -1141,13 +1143,13 @@ function Fact({ label, value }: { label: string; value: string }) {
 function EmptyState({ title, copy, action, onPress }: { title: string; copy: string; action?: string; onPress?: () => void }) {
   return <View style={styles.emptyState}><Text style={styles.emptyMark}>SS</Text><Text style={styles.emptyTitle}>{title}</Text><Text style={styles.emptyCopy}>{copy}</Text>{action && onPress ? <ActionButton label={action} onPress={onPress} secondary /> : null}</View>;
 }
-function NavItem({ label, glyph, active, onPress }: { label: string; glyph: string; active: boolean; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={styles.navItem} accessibilityRole="button" accessibilityState={{ selected: active }}><Text style={[styles.navGlyph, active && styles.navGlyphActive]}>{glyph}</Text><Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text></Pressable>;
+function NavItem({ label, icon, active, onPress }: { label: string; icon: React.ComponentProps<typeof Ionicons>['name']; active: boolean; onPress: () => void }) {
+  return <Pressable onPress={onPress} style={styles.navItem} accessibilityRole="button" accessibilityState={{ selected: active }}><Ionicons name={icon} size={22} color={active ? C.gold : C.soft} /><Text style={[styles.navLabel, active && styles.navLabelActive]}>{label}</Text></Pressable>;
 }
 
 const styles = StyleSheet.create({
   app: { flex: 1, backgroundColor: C.bg },
-  topbar: { minHeight: 78, paddingHorizontal: 18, paddingTop: Platform.OS === 'android' ? 10 : 4, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: C.line, borderBottomWidth: StyleSheet.hairlineWidth, backgroundColor: '#08121D' },
+  topbar: { minHeight: 78, paddingHorizontal: 18, paddingTop: Platform.OS === 'android' ? (NativeStatusBar.currentHeight ?? 24) + 8 : 4, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: C.line, borderBottomWidth: StyleSheet.hairlineWidth, backgroundColor: '#08121D' },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   brandMark: { width: 44, height: 44, borderWidth: 1, borderColor: 'rgba(239,195,110,0.65)', borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: C.card2 },
   brandMarkText: { color: C.gold, fontSize: 17, fontWeight: '900', letterSpacing: -1 },

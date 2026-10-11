@@ -747,6 +747,7 @@
         <div class="modal-grid">
           <label>Name<input required name="name" placeholder="Your name" /></label>
           <label>Phone<input type="tel" required name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="10-digit mobile or +91 number" /></label>
+          <label>Email (optional)<input type="email" name="email" autocomplete="email" placeholder="you@example.com" /></label>
           <label>Looking for<select name="purpose"><option>For Sale</option><option>For Rent</option><option>Commercial</option><option>Sell My Property</option></select></label>
           <label>Property Type<select name="type"><option>Apartment</option><option>Villa</option><option>Plot</option><option>Commercial</option><option>Any</option></select></label>
           <label class="modal-full">Message<textarea name="message" rows="4" placeholder="Location, budget, size and anything else you'd like us to know."></textarea></label>
@@ -1111,6 +1112,7 @@
       const enquiry = {
         name: String(formData.get('name') || '').trim(),
         phone: String(formData.get('phone') || '').trim(),
+        email: String(formData.get('email') || '').trim() || null,
         purpose: String(formData.get('purpose') || '').trim(),
         property_type: String(formData.get('type') || '').trim(),
         message: String(formData.get('message') || '').trim()

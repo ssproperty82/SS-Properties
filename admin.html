@@ -44,6 +44,8 @@ header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:
 </section>
 
 <script>
+(function(){
+'use strict';
 const SUPABASE_URL='https://axduezmiyyznpmmyailf.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3'.replace('Ezy','Ezy');
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
@@ -124,6 +126,8 @@ supabase.auth.onAuthStateChange((event,session)=>{
   }
 });
 loadDashboard();
+
+})();
 </script>
 </body>
 </html>

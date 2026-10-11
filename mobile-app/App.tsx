@@ -297,7 +297,7 @@ export default function App() {
 
   const isOwner = session?.user?.email?.toLowerCase() === OWNER_EMAIL;
   const availableLocations = useMemo(
-    () => Array.from(new Map(properties.map((p) => [normalizeLocation(p.location), p.location])).values()).filter(Boolean).sort(),
+    () => Array.from(new Map(properties.map((p) => [normalizeLocation(p.location), p.location] as const)).values()).filter(Boolean).sort(),
     [properties],
   );
 

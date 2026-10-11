@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "SS Properties",
+    "slug": "ss-properties",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "ssproperties",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ssproperties.mobile"
+    },
+    "android": {
+      "package": "com.ssproperties.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#07101A"
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "SS Properties needs photo access so the owner can upload property photos.",
+          "microphonePermission": false,
+          "cameraPermission": false
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "SET_AFTER_RUNNING_EAS_INIT"
+      }
+    }
+  }
+}

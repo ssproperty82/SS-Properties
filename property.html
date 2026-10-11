@@ -51,7 +51,7 @@
 <script>
 (function(){
 'use strict';
-const URL='https://axduezmiyyznpmmyailf.supabase.co';
+const SUPABASE_URL='https://axduezmiyyznpmmyailf.supabase.co';
 const KEY='sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -67,14 +67,14 @@ function normalizeImageList(value){
  return [text.replace(/^\{+|\}+$/g,'').trim()].filter(Boolean);
 }
 function publicStorageUrl(path){
- return URL+'/storage/v1/object/public/property-images/'+String(path).split('/').map(part=>encodeURIComponent(part)).join('/');
+ return SUPABASE_URL+'/storage/v1/object/public/property-images/'+String(path).split('/').map(part=>encodeURIComponent(part)).join('/');
 }
 async function listPropertyStoragePhotos(id){
  const prefix='properties/'+id+'/';
  const files=[];
  try{
   for(let offset=0;offset<500;offset+=100){
-   const response=await fetch(URL+'/storage/v1/object/list/property-images',{
+   const response=await fetch(SUPABASE_URL+'/storage/v1/object/list/property-images',{
     method:'POST',
     headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
     body:JSON.stringify({prefix,limit:100,offset,sortBy:{column:'name',order:'asc'}})
@@ -112,7 +112,7 @@ async function init(){
  const id=new URLSearchParams(location.search).get('id');
  if(!id){showError();return}
  try{
-  const response=await fetch(URL+'/rest/v1/properties?select=id,title,description,property_type,listing_type,price,price_display,location,area_sqft,bedrooms,bathrooms,image_url,images,amenities,featured,status&id=eq.'+encodeURIComponent(id)+'&status=eq.available&limit=1',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
+  const response=await fetch(SUPABASE_URL+'/rest/v1/properties?select=id,title,description,property_type,listing_type,price,price_display,location,area_sqft,bedrooms,bathrooms,image_url,images,amenities,featured,status&id=eq.'+encodeURIComponent(id)+'&status=eq.available&limit=1',{headers:{apikey:KEY,Authorization:'Bearer '+KEY}});
   if(!response.ok)throw new Error('Could not load property');
   const rows=await response.json();
   if(!rows.length){showError();return}

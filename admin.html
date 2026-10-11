@@ -20,8 +20,8 @@ header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:
     <div class="eyebrow">Owner access</div><h1>Welcome back.</h1>
     <p>Sign in with the business account to manage enquiries and properties.</p>
     <form id="loginForm">
-      <div class="field"><label>Email</label><input id="email" type="email" required autocomplete="email"></div>
-      <div class="field"><label>Password</label><input id="password" type="password" required autocomplete="current-password"></div>
+      <div class="field"><label for="email">Email</label><input id="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label for="password">Password</label><input id="password" type="password" required autocomplete="current-password"></div>
       <div id="loginError" class="error"></div>
       <button class="btn gold" style="width:100%" type="submit">Sign in →</button>
     </form>
@@ -44,7 +44,7 @@ header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:
     <form id="propertyForm" class="property-form hidden">
       <div class="eyebrow" id="propertyFormEyebrow">Property editor</div>
       <h3 id="propertyFormTitle" style="margin:7px 0 3px">Add property</h3>
-      <p style="margin-top:0">Fields marked * are required. Use an image URL for the property's main photo.</p>
+      <p style="margin-top:0">Fields marked * are required. Select one or more photos below; you can remove existing photos before saving.</p>
       <input id="propertyId" type="hidden">
       <div class="form-grid">
         <div class="field"><label for="pTitle">Property title *</label><input id="pTitle" required maxlength="160" placeholder="e.g. 2 BHK Apartment"></div>
@@ -75,7 +75,7 @@ header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:
 (function(){
 'use strict';
 const SUPABASE_URL='https://axduezmiyyznpmmyailf.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY='sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3'.replace('Ezy','Ezy');
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3';
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let removedExistingPhotos=new Set();
 let selectedUnlinkedPhotos=new Set();

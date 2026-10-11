@@ -856,7 +856,10 @@
     function renderProperties(list){
       count.textContent = list.length + (list.length === 1 ? ' property' : ' properties');
       if(!list.length){
-        grid.innerHTML='<div style="grid-column:1/-1;padding:28px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13px">No available properties match this view yet. Please contact us for current listings.</div>';
+        const emptyMessage = activePurpose === 'saved'
+          ? 'No saved properties yet. Tap the heart on a listing to save it on this device.'
+          : 'No available properties match this view yet. Please contact us for current listings.';
+        grid.innerHTML='<div style="grid-column:1/-1;padding:28px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13px">'+escapeHtml(emptyMessage)+'</div>';
         return;
       }
       grid.innerHTML = list.map(p => {

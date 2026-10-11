@@ -35,7 +35,7 @@
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    .hero,.section{scroll-margin-top:92px}
+    :target{scroll-margin-top:92px}
     body{
       margin:0;
       font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -746,7 +746,7 @@
       <form id="enquiryForm">
         <div class="modal-grid">
           <label>Name<input required name="name" placeholder="Your name" /></label>
-          <label>Phone<input required name="phone" inputmode="tel" placeholder="10-digit number" /></label>
+          <label>Phone<input type="tel" required name="phone" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="10-digit mobile or +91 number" /></label>
           <label>Looking for<select name="purpose"><option>For Sale</option><option>For Rent</option><option>Commercial</option><option>Sell My Property</option></select></label>
           <label>Property Type<select name="type"><option>Apartment</option><option>Villa</option><option>Plot</option><option>Commercial</option><option>Any</option></select></label>
           <label class="modal-full">Message<textarea name="message" rows="4" placeholder="Location, budget, size and anything else you'd like us to know."></textarea></label>

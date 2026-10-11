@@ -736,33 +736,93 @@
     const SUPABASE_URL = 'https://axduezmiyyznpmmyailf.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3';
 
-    const properties = [
-      {id:1,purpose:'sale',type:'apartment',title:'2 BHK Apartment',location:'Thane West, Thane',price:'₹ 1.10 Cr',beds:'2 Beds',baths:'2 Baths',area:'950 sq.ft.',image:'https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=86'},
-      {id:2,purpose:'sale',type:'villa',title:'3 BHK Independent House',location:'Balkum, Thane',price:'₹ 2.45 Cr',beds:'3 Beds',baths:'3 Baths',area:'1,800 sq.ft.',image:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=86'},
-      {id:3,purpose:'rent',type:'commercial',title:'Office Space',location:'Wagle Estate, Thane',price:'₹ 1.75 L /mo',beds:'Furnished',baths:'',area:'1,500 sq.ft.',image:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1000&q=86'},
-      {id:4,purpose:'sale',type:'plot',title:'Residential Plot',location:'Kalwa, Thane',price:'₹ 85 L',beds:'Clear Title',baths:'',area:'2,000 sq.ft.',image:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=86'}
-    ];
+    // Public listings are loaded from Supabase. Only rows marked available are returned by RLS.
+    const properties = [];
+
 
     const grid = document.getElementById('propertyGrid');
     const count = document.getElementById('propertyCount');
     let activePurpose = 'all';
     let searchPurpose = 'sale';
 
+    const defaultPropertyImages = {
+      apartment:'https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=86',
+      villa:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=86',
+      commercial:'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1000&q=86',
+      plot:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=86'
+    };
+
+    function escapeHtml(value){
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+    }
+    function normalizeType(value){
+      const v=String(value||'').toLowerCase();
+      if(v.includes('apartment')||v.includes('flat')) return 'apartment';
+      if(v.includes('house')||v.includes('villa')||v.includes('independent')) return 'villa';
+      if(v.includes('commercial')||v.includes('office')||v.includes('shop')) return 'commercial';
+      if(v.includes('plot')||v.includes('land')) return 'plot';
+      return 'other';
+    }
+    function safeImage(value,type){
+      const fallback=defaultPropertyImages[type]||defaultPropertyImages.apartment;
+      try{
+        const parsed=new URL(String(value||''),window.location.href);
+        return ['http:','https:'].includes(parsed.protocol)?parsed.href:fallback;
+      }catch(_){return fallback}
+    }
+    async function loadPublicProperties(){
+      const endpoint=SUPABASE_URL+'/rest/v1/properties?select=id,title,location,property_type,listing_type,price,price_display,area_sqft,bedrooms,bathrooms,image_url,featured,status,created_at&status=eq.available&order=featured.desc,created_at.desc';
+      try{
+        const response=await fetch(endpoint,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+SUPABASE_PUBLISHABLE_KEY}});
+        if(!response.ok) throw new Error('Supabase returned HTTP '+response.status+': '+(await response.text()));
+        const rows=await response.json();
+        properties.splice(0,properties.length,...rows.map(row=>{
+          const rawListing=String(row.listing_type||'buy').toLowerCase();
+          const purpose=(rawListing==='rent'||rawListing==='lease')?'rent':(rawListing==='commercial'?'commercial':'sale');
+          const type=normalizeType(row.property_type);
+          const price=row.price_display||((row.price!==null&&row.price!==undefined)?'₹ '+Number(row.price).toLocaleString('en-IN'):'Price on request');
+          return {
+            id:row.id,
+            purpose,
+            type,
+            typeLabel:row.property_type||'Property',
+            title:row.title||'Property listing',
+            location:row.location||'',
+            price,
+            beds:row.bedrooms?row.bedrooms+' Beds':'',
+            baths:row.bathrooms?row.bathrooms+' Baths':'',
+            area:row.area_sqft?Number(row.area_sqft).toLocaleString('en-IN')+' sq.ft.':'',
+            image:safeImage(row.image_url,type)
+          };
+        }));
+        applyPurposeFilter(activePurpose);
+      }catch(error){
+        console.error('SS Properties listing load error:',error);
+        count.textContent='Listings unavailable';
+        grid.innerHTML='<div style="grid-column:1/-1;padding:28px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13px">Property listings are temporarily unavailable. Please call or WhatsApp SS Properties for current availability.</div>';
+      }
+    }
+
     function renderProperties(list){
       count.textContent = list.length + (list.length === 1 ? ' property' : ' properties');
+      if(!list.length){
+        grid.innerHTML='<div style="grid-column:1/-1;padding:28px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13px">No available properties match this view yet. Please contact us for current listings.</div>';
+        return;
+      }
       grid.innerHTML = list.map(p => {
         const meta = [p.beds,p.baths,p.area].filter(Boolean);
+        const badge=p.purpose==='sale'?'For Sale':(p.purpose==='rent'?'For Rent':'Commercial');
         return '<article class="property-card">' +
           '<div class="property-image">' +
-            '<img src="' + p.image + '" alt="' + p.title + '" loading="lazy" />' +
-            '<span class="badge">' + (p.purpose === 'sale' ? 'For Sale' : 'For Rent') + '</span>' +
+            '<img src="' + escapeHtml(p.image) + '" alt="' + escapeHtml(p.title) + '" loading="lazy" />' +
+            '<span class="badge">' + badge + '</span>' +
             '<button class="heart" data-heart aria-label="Save property">♡</button>' +
           '</div>' +
           '<div class="property-content">' +
-            '<div class="property-type">' + p.type + '</div>' +
-            '<div class="property-top"><h3 class="property-title">' + p.title + '</h3><div class="property-price">' + p.price + '</div></div>' +
-            '<div class="property-location">⌖ &nbsp;' + p.location + '</div>' +
-            '<div class="property-meta">' + meta.map(m => '<span>◦ ' + m + '</span>').join('') + '</div>' +
+            '<div class="property-type">' + escapeHtml(p.typeLabel||p.type) + '</div>' +
+            '<div class="property-top"><h3 class="property-title">' + escapeHtml(p.title) + '</h3><div class="property-price">' + escapeHtml(p.price) + '</div></div>' +
+            '<div class="property-location">⌖ &nbsp;' + escapeHtml(p.location) + '</div>' +
+            '<div class="property-meta">' + meta.map(m => '<span>◦ ' + escapeHtml(m) + '</span>').join('') + '</div>' +
           '</div>' +
         '</article>';
       }).join('');
@@ -947,6 +1007,7 @@
 
     document.getElementById('year').textContent = new Date().getFullYear();
     renderProperties(properties);
+    loadPublicProperties();
   </script>
 </body>
 </html>

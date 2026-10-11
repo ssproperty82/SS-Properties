@@ -10,7 +10,7 @@
 :root{--bg:#07101a;--surface:#0e1a27;--surface2:#132233;--text:#f6f0e5;--muted:#9da9b5;--line:rgba(255,255,255,.1);--gold:#efc36e;--danger:#ef7d7d}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,sans-serif}button,input,select{font:inherit}
 .wrap{width:min(1180px,calc(100% - 32px));margin:auto}.login{min-height:100vh;display:grid;place-items:center;padding:20px}.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:0 25px 70px #0006}.login-card{width:min(430px,100%)}h1,h2,h3{margin-top:0}.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}.mark{width:44px;height:44px;border:1px solid #efc36e99;border-radius:12px;display:grid;place-items:center;color:var(--gold);font-weight:800}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:800}h1{font-size:30px;margin:8px 0}p{color:var(--muted);line-height:1.6;font-size:13px}.field{margin:15px 0}.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:7px}.field input,.field select,.field textarea{width:100%;padding:12px;border-radius:11px;border:1px solid var(--line);background:#091521;color:var(--text);outline:0}.field textarea{min-height:88px;resize:vertical}.btn{border:0;border-radius:11px;padding:12px 16px;font-weight:800;cursor:pointer}.gold{background:var(--gold);color:#08111a}.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}.danger{color:var(--danger)}.error{color:var(--danger);font-size:12px;min-height:18px}.hidden{display:none!important}
-header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:blur(15px);position:sticky;top:0;z-index:5}.head{height:72px;display:flex;align-items:center;justify-content:space-between;gap:15px}.head .brand{margin:0}.user{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px}.main{padding:35px 0}.top{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:25px}.top h1{font-family:Georgia,serif;font-size:44px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}.stat strong{font-size:28px;display:block}.stat span{font-size:10px;color:var(--muted)}.tabs{display:flex;gap:8px;margin-bottom:15px}.tab{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 13px;border-radius:999px;cursor:pointer;font-size:11px}.tab.active{background:var(--gold);color:#08111a;border-color:var(--gold)}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}.panel-head{padding:18px;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:11px;vertical-align:top}th{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}td small{display:block;color:var(--muted);margin-top:4px}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#efc36e22;color:var(--gold);font-size:9px}.empty{text-align:center;padding:40px;color:var(--muted)}.property-form{padding:18px;border-bottom:1px solid var(--line)}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}.form-grid .field{margin:9px 0}.form-grid .full{grid-column:1/-1}.form-actions,.property-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.form-actions{margin-top:12px}.small-btn{padding:8px 10px;border-radius:8px;font-size:10px}.property-actions .btn{white-space:nowrap}.message{padding:10px 18px;font-size:12px;color:var(--muted)}.message.success{color:#9be0b0}.message.error{color:var(--danger)}.photo-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.photo-item{width:100px}.photo-item img{width:100px;height:74px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}.photo-item small{display:block;overflow-wrap:anywhere;color:var(--muted);font-size:9px;margin-top:4px}.photo-item .remove-photo{display:block;width:100%;margin-top:6px;padding:5px 7px;border:1px solid #ef7d7d66;border-radius:7px;background:transparent;color:var(--danger);font-size:10px;cursor:pointer}.photo-item.is-removed img{opacity:.35;filter:grayscale(1)}.photo-item.is-removed small{color:var(--danger);text-decoration:line-through}.photo-item .remove-photo.keep-photo{border-color:#9be0b066;color:#9be0b0}.unlinked-panel{margin-top:14px;padding:13px;border:1px dashed #efc36e66;border-radius:12px}.unlinked-panel strong{font-size:12px}.unlinked-panel p{margin:6px 0 10px;font-size:11px}.photo-item .attach-photo{display:block;width:100%;margin-top:6px;padding:5px 7px;border:1px solid #efc36e66;border-radius:7px;background:transparent;color:var(--gold);font-size:10px;cursor:pointer}.photo-item.is-selected{outline:2px solid var(--gold);outline-offset:2px}.photo-item .attach-photo.is-attached{background:#efc36e22;border-color:var(--gold)}.unlinked-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.check-field{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;margin:15px 0}.check-field input{accent-color:var(--gold)}@media(max-width:650px){.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.stats{grid-template-columns:1fr}.top{align-items:start;flex-direction:column}.top h1{font-size:35px}.user span{display:none}}
+header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:blur(15px);position:sticky;top:0;z-index:5}.head{height:72px;display:flex;align-items:center;justify-content:space-between;gap:15px}.head .brand{margin:0}.user{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px}.main{padding:35px 0}.top{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:25px}.top h1{font-family:Georgia,serif;font-size:44px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}.stat strong{font-size:28px;display:block}.stat span{font-size:10px;color:var(--muted)}.tabs{display:flex;gap:8px;margin-bottom:15px}.tab{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 13px;border-radius:999px;cursor:pointer;font-size:11px}.tab.active{background:var(--gold);color:#08111a;border-color:var(--gold)}.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}.panel-head{padding:18px;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:11px;vertical-align:top}th{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}td small{display:block;color:var(--muted);margin-top:4px}.badge{display:inline-block;padding:5px 8px;border-radius:999px;background:#efc36e22;color:var(--gold);font-size:9px}.empty{text-align:center;padding:40px;color:var(--muted)}.property-form{padding:18px;border-bottom:1px solid var(--line)}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}.form-grid .field{margin:9px 0}.form-grid .full{grid-column:1/-1}.form-actions,.property-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.form-actions{margin-top:12px}.small-btn{padding:8px 10px;border-radius:8px;font-size:10px}.property-actions .btn{white-space:nowrap}.message{padding:10px 18px;font-size:12px;color:var(--muted)}.message.success{color:#9be0b0}.message.error{color:var(--danger)}.enquiry-status-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px}.status-select{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:#091521;color:var(--text);font-size:10px;max-width:120px}.photo-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.photo-item{width:100px}.photo-item img{width:100px;height:74px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}.photo-item small{display:block;overflow-wrap:anywhere;color:var(--muted);font-size:9px;margin-top:4px}.photo-item .remove-photo{display:block;width:100%;margin-top:6px;padding:5px 7px;border:1px solid #ef7d7d66;border-radius:7px;background:transparent;color:var(--danger);font-size:10px;cursor:pointer}.photo-item.is-removed img{opacity:.35;filter:grayscale(1)}.photo-item.is-removed small{color:var(--danger);text-decoration:line-through}.photo-item .remove-photo.keep-photo{border-color:#9be0b066;color:#9be0b0}.unlinked-panel{margin-top:14px;padding:13px;border:1px dashed #efc36e66;border-radius:12px}.unlinked-panel strong{font-size:12px}.unlinked-panel p{margin:6px 0 10px;font-size:11px}.photo-item .attach-photo{display:block;width:100%;margin-top:6px;padding:5px 7px;border:1px solid #efc36e66;border-radius:7px;background:transparent;color:var(--gold);font-size:10px;cursor:pointer}.photo-item.is-selected{outline:2px solid var(--gold);outline-offset:2px}.photo-item .attach-photo.is-attached{background:#efc36e22;border-color:var(--gold)}.unlinked-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.check-field{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;margin:15px 0}.check-field input{accent-color:var(--gold)}@media(max-width:650px){.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.stats{grid-template-columns:1fr}.top{align-items:start;flex-direction:column}.top h1{font-size:35px}.user span{display:none}}
 </style>
 </head>
 <body>
@@ -38,7 +38,7 @@ header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:
     <div class="card stat"><strong id="propertyCount">—</strong><span>Available properties</span></div>
   </div>
   <div class="tabs"><button class="tab active" data-tab="enquiries">Enquiries</button><button class="tab" data-tab="properties">Properties</button></div>
-  <div id="enquiriesPanel" class="panel"><div class="panel-head"><strong>Recent enquiries</strong><button id="refresh" class="btn ghost">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Requirement</th><th>Message</th><th>Status</th></tr></thead><tbody id="enquiriesBody"></tbody></table></div></div>
+  <div id="enquiriesPanel" class="panel"><div class="panel-head"><strong>Recent enquiries</strong><button id="refresh" class="btn ghost">Refresh</button></div><div id="enquiriesMessage" class="message" role="status" aria-live="polite"></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Requirement</th><th>Message</th><th>Status & follow-up</th></tr></thead><tbody id="enquiriesBody"></tbody></table></div></div>
   <div id="propertiesPanel" class="panel hidden">
     <div class="panel-head"><strong>Properties</strong><div class="property-actions"><button id="addProperty" class="btn gold">+ Add property</button><button id="refreshProps" class="btn ghost">Refresh</button></div></div>
     <form id="propertyForm" class="property-form hidden">
@@ -108,11 +108,53 @@ async function loadDashboard(){
   await showLoggedIn(data.session);
 }
 async function loadEnquiries(){
+  const body=document.getElementById('enquiriesBody');
   const {data,error}=await supabase.from('enquiries').select('id,name,phone,email,purpose,property_type,message,status,created_at').order('created_at',{ascending:false});
-  if(error){document.getElementById('enquiriesBody').innerHTML='<tr><td colspan="5" class="empty">Could not load enquiries. Check the admin RLS policy.</td></tr>';console.error(error);return}
+  if(error){
+    body.innerHTML='<tr><td colspan="5" class="empty">Could not load enquiries. Check the admin RLS policy.</td></tr>';
+    setEnquiriesMessage(error.message,'error');
+    console.error('loadEnquiries:',error);
+    return;
+  }
+  setEnquiriesMessage('');
   document.getElementById('newCount').textContent=data.filter(x=>x.status==='new').length;
   document.getElementById('totalCount').textContent=data.length;
-  document.getElementById('enquiriesBody').innerHTML=data.length?data.map(x=>'<tr><td>'+new Date(x.created_at).toLocaleString()+'</td><td><strong>'+esc(x.name)+'</strong><small>'+esc(x.phone)+(x.email?' · '+esc(x.email):'')+'</small></td><td>'+esc(x.purpose||'—')+'<small>'+esc(x.property_type||'—')+'</small></td><td>'+esc(x.message||'—')+'</td><td><span class="badge">'+esc(x.status||'new')+'</span></td></tr>').join(''):'<tr><td colspan="5" class="empty">No enquiries yet.</td></tr>';
+  body.innerHTML=data.length?data.map(x=>{
+    const status=String(x.status||'new');
+    const choices=[['new','New'],['contacted','Contacted'],['closed','Closed']];
+    if(!choices.some(([value])=>value===status))choices.push([status,status]);
+    const options=choices.map(([value,label])=>'<option value="'+esc(value)+'"'+(status===value?' selected':'')+'>'+esc(label)+'</option>').join('');
+    return '<tr><td>'+new Date(x.created_at).toLocaleString()+'</td>'+
+      '<td><strong>'+esc(x.name)+'</strong><small>'+esc(x.phone)+(x.email?' · '+esc(x.email):'')+'</small></td>'+
+      '<td>'+esc(x.purpose||'—')+'<small>'+esc(x.property_type||'—')+'</small></td>'+
+      '<td>'+esc(x.message||'—')+'</td>'+
+      '<td><span class="badge">'+esc(status)+'</span><div class="enquiry-status-controls">'+
+      '<select class="status-select" data-enquiry-status aria-label="Status for enquiry from '+esc(x.name)+'">'+options+'</select>'+
+      '<button type="button" class="btn ghost small-btn" data-save-enquiry-status="'+esc(x.id)+'">Save</button></div></td></tr>';
+  }).join(''):'<tr><td colspan="5" class="empty">No enquiries yet.</td></tr>';
+}
+function setEnquiriesMessage(message,type=''){
+  const el=document.getElementById('enquiriesMessage');
+  el.textContent=message||'';
+  el.className='message'+(type?' '+type:'');
+}
+async function saveEnquiryStatus(button){
+  const row=button.closest('tr');
+  const select=row?.querySelector('[data-enquiry-status]');
+  const id=button.dataset.saveEnquiryStatus;
+  if(!id||!select)return;
+  button.disabled=true;
+  try{
+    const {error}=await supabase.from('enquiries').update({status:select.value}).eq('id',id);
+    if(error)throw error;
+    setEnquiriesMessage('Enquiry status updated to '+select.options[select.selectedIndex].text+'.','success');
+    await loadEnquiries();
+  }catch(error){
+    console.error('saveEnquiryStatus:',error);
+    setEnquiriesMessage(error?.message||'Could not update this enquiry status. Check the admin update policy.','error');
+  }finally{
+    button.disabled=false;
+  }
 }
 async function loadProperties(){
   const body=document.getElementById('propertiesBody');
@@ -502,6 +544,10 @@ document.getElementById('unlinkedPhotos').addEventListener('click',event=>{
   updateUnlinkedPhotosUI();
 });
 document.getElementById('propertiesBody').addEventListener('click',handlePropertyAction);
+document.getElementById('enquiriesBody').addEventListener('click',event=>{
+  const button=event.target.closest('[data-save-enquiry-status]');
+  if(button)saveEnquiryStatus(button);
+});
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('enquiriesPanel').classList.toggle('hidden',b.dataset.tab!=='enquiries');document.getElementById('propertiesPanel').classList.toggle('hidden',b.dataset.tab!=='properties')}));
 supabase.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_OUT'){

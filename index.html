@@ -575,6 +575,7 @@
                   <option value="villa">Villa</option>
                   <option value="plot">Plot</option>
                   <option value="commercial">Commercial</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
               <div class="field">
@@ -803,8 +804,8 @@
     function normalizeType(value){
       const v=String(value||'').toLowerCase();
       if(v.includes('apartment')||v.includes('flat')) return 'apartment';
-      if(v.includes('house')||v.includes('villa')||v.includes('independent')) return 'villa';
-      if(v.includes('commercial')||v.includes('office')||v.includes('shop')) return 'commercial';
+      if(v.includes('house')||v.includes('villa')||v.includes('independent')||v.includes('bungalow')||v.includes('townhouse')) return 'villa';
+      if(v.includes('commercial')||v.includes('office')||v.includes('shop')||v.includes('warehouse')||v.includes('industrial')) return 'commercial';
       if(v.includes('plot')||v.includes('land')) return 'plot';
       return 'other';
     }

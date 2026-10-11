@@ -478,9 +478,15 @@ async function handlePropertyAction(event){
     if(action==='delete'){
       const approved=window.confirm('Permanently delete “'+data.title+'”? This cannot be undone.');
       if(!approved) return;
+      const photoUrls=Array.from(new Set([data.image_url,...(Array.isArray(data.images)?data.images:[])].filter(Boolean)));
       const {error:deleteError}=await supabase.from('properties').delete().eq('id',id);
       if(deleteError) throw deleteError;
-      setPropertiesMessage('Property permanently deleted.','success');
+      let cleanupWarning=false;
+      if(photoUrls.length){
+        try{cleanupWarning=await cleanupRemovedPhotoFiles(photoUrls,id)}
+        catch(cleanupError){console.warn('Deleted property photo cleanup warning:',cleanupError);cleanupWarning=true}
+      }
+      setPropertiesMessage('Property permanently deleted.'+(cleanupWarning?' Some unused photo files may remain in storage.':''),cleanupWarning?'error':'success');
       await loadProperties();
     }
   }catch(err){

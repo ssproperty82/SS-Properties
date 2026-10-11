@@ -372,7 +372,6 @@ async function saveProperty(event){
     const uploadedUrls=[];
     for(const file of files){
       const cleanName=file.name.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').slice(-90)||'photo';
-      const recordId=id||crypto.randomUUID();
       const path='properties/'+recordId+'/'+crypto.randomUUID()+'-'+cleanName;
       const {error:uploadError}=await supabase.storage.from('property-images').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
       if(uploadError) throw uploadError;

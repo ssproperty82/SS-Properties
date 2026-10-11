@@ -457,7 +457,7 @@
     }
     @media(max-width:620px){
       .container,.header-inner,.hero-inner{width:min(100% - 28px,1340px)}
-      .site-header{padding-top:11px}
+      .site-header{padding:11px 0}
       .brand{min-width:0}
       .brand-tag{display:none}
       .brand-name{font-size:13px}
@@ -1086,6 +1086,7 @@
     menuBtn.addEventListener('click', () => {
       const open = mainNav.classList.toggle('open');
       menuBtn.setAttribute('aria-expanded', String(open));
+      menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       if(open){
         mainNav.style.display = 'flex';
         mainNav.style.position = 'absolute';
@@ -1097,17 +1098,22 @@
         mainNav.style.padding = '12px 16px';
         mainNav.style.border = '1px solid rgba(255,255,255,.12)';
         mainNav.style.borderRadius = '16px';
-        mainNav.style.background = 'rgba(7,16,26,.96)';
+        const lightMode = document.body.classList.contains('light');
+        mainNav.style.background = lightMode ? 'rgba(247,243,234,.98)' : 'rgba(7,16,26,.96)';
+        mainNav.style.borderColor = lightMode ? 'rgba(17,24,39,.12)' : 'rgba(255,255,255,.12)';
         mainNav.style.backdropFilter = 'blur(18px)';
       } else {
         mainNav.removeAttribute('style');
       }
     });
 
-    mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    function closeMobileNav(){
       mainNav.classList.remove('open');
       mainNav.removeAttribute('style');
-    }));
+      menuBtn.setAttribute('aria-expanded','false');
+      menuBtn.setAttribute('aria-label','Open menu');
+    }
+    mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
 
     // Search jump
     document.getElementById('focusSearch').addEventListener('click', () => {
@@ -1123,7 +1129,12 @@
     openEnquiry.addEventListener('click', () => modal.classList.add('show'));
     closeEnquiry.addEventListener('click', () => modal.classList.remove('show'));
     modal.addEventListener('click', e => { if(e.target === modal) modal.classList.remove('show'); });
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') modal.classList.remove('show'); });
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape'){
+        modal.classList.remove('show');
+        closeMobileNav();
+      }
+    });
 
     enquiryForm.addEventListener('submit', async e => {
       e.preventDefault();

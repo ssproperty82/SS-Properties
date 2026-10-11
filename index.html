@@ -168,9 +168,16 @@
     .purpose-tab.active{background:var(--gold);color:#0b1118}
     .hero-proof{display:flex;align-items:center;gap:28px}
     .proof{display:flex;gap:10px;align-items:center}
-    .proof-icon{
-      width:30px;height:30px;border:1px solid rgba(239,195,110,.55);border-radius:50%;
-      display:grid;place-items:center;color:var(--gold);font-size:12px
+    .proof .proof-icon{
+      width:30px;height:30px;flex:0 0 30px;
+      border:1px solid rgba(239,195,110,.58);border-radius:50%;
+      display:grid;place-items:center;color:var(--gold);
+      background:rgba(239,195,110,.08);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+    }
+    .proof .proof-icon svg{
+      display:block;width:15px;height:15px;fill:none;stroke:currentColor;
+      stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
     }
     .proof strong{font-size:17px;display:block;line-height:1}
     .proof span{font-size:8px;color:#aab4bf;display:block;margin-top:4px}
@@ -523,11 +530,11 @@
           </div>
 
           <div class="hero-proof">
-            <div class="proof"><span class="proof-icon">♡</span><div><strong>500+</strong><span>Happy Clients</span></div></div>
+            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/></svg></span><div><strong>500+</strong><span>Happy Clients</span></div></div>
             <div class="proof-divider"></div>
-            <div class="proof"><span class="proof-icon">✦</span><div><strong>100+</strong><span>Properties Listed</span></div></div>
+            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/><path d="M9 7h1"/><path d="M14 7h1"/><path d="M9 11h1"/><path d="M14 11h1"/><path d="M9 15h1"/><path d="M14 15h1"/><path d="M10 21v-3h4v3"/></svg></span><div><strong>100+</strong><span>Properties Listed</span></div></div>
             <div class="proof-divider"></div>
-            <div class="proof"><span class="proof-icon">◉</span><div><strong>10+</strong><span>Years of Experience</span></div></div>
+            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span><div><strong>10+</strong><span>Years of Experience</span></div></div>
           </div>
         </div>
 

@@ -846,6 +846,7 @@
             listingId:row.id
           };
         }));
+        updateLocationOptions();
         applyPurposeFilter(activePurpose);
       }catch(error){
         console.error('SS Properties listing load error:',error);
@@ -966,6 +967,28 @@
     }
     function normalizeSearchText(value){
       return String(value || '').toLowerCase().replace(/\(w\)/g,' west').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+    }
+    function updateLocationOptions(){
+      const select=document.getElementById('location');
+      const previous=select.value;
+      const locations=new Map();
+      properties.forEach(property=>{
+        const label=String(property.location||'').trim();
+        const key=normalizeSearchText(label);
+        if(key&&!locations.has(key))locations.set(key,label);
+      });
+      if(!locations.size)return;
+      const options=[{value:'all',label:'Any location'},...Array.from(locations,([value,label])=>({value:label,label}))];
+      select.replaceChildren();
+      options.forEach(item=>{
+        const option=document.createElement('option');
+        option.value=item.value;
+        option.textContent=item.label;
+        select.append(option);
+      });
+      const previousKey=normalizeSearchText(previous);
+      const retained=Array.from(select.options).find(option=>option.value===previous||normalizeSearchText(option.value)===previousKey);
+      select.value=retained?retained.value:'all';
     }
     function matchesBudget(price, range, purpose){
       if (range === 'all') return true;

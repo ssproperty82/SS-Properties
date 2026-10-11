@@ -72,9 +72,13 @@
 
     /* Header */
     .site-header{
-      position:absolute;top:0;left:0;right:0;z-index:50;
+      position:fixed;top:0;left:0;right:0;z-index:50;
       padding:18px 0;
-      background:linear-gradient(180deg,rgba(3,9,15,.70),transparent);
+      background:rgba(5,12,19,.78);
+      -webkit-backdrop-filter:blur(18px);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      box-shadow:0 8px 24px rgba(0,0,0,.08);
     }
     .header-inner{
       width:min(1340px,calc(100% - 48px));margin:auto;
@@ -379,7 +383,13 @@
     .toast.show{opacity:1;transform:translate(-50%,0)}
 
     /* Light overrides */
-    body.light .site-header{background:linear-gradient(180deg,rgba(247,243,234,.92),transparent)}
+    body.light .site-header{
+      background:rgba(247,243,234,.84);
+      -webkit-backdrop-filter:blur(18px);
+      backdrop-filter:blur(18px);
+      border-bottom-color:rgba(20,29,39,.10);
+      box-shadow:0 8px 24px rgba(20,29,39,.06)
+    }
     body.light .brand-mark{background:rgba(255,255,255,.88);color:#111827}
     body.light .brand-tag{color:#727b85}
     body.light .main-nav a{color:#515c67}

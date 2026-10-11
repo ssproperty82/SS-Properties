@@ -59,6 +59,7 @@ header{border-bottom:1px solid var(--line);background:#050c14cc;backdrop-filter:
         <div class="field"><label for="pStatus">Availability</label><select id="pStatus"><option value="available">Available (visible publicly)</option><option value="unavailable">Unavailable (hidden publicly)</option></select></div>
         <div class="field full"><label for="pImages">Property photos (select multiple images from your device)</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple><small style="display:block;color:var(--muted);margin-top:7px">Choose multiple photos at once. JPG, PNG, WebP, GIF or AVIF; up to 10 MB per photo. New photos are added to any existing photos.</small><div id="existingPhotos" class="photo-strip"></div><div id="selectedPhotos" class="photo-strip"></div></div>
         <div class="field full"><label for="pDescription">Description</label><textarea id="pDescription" maxlength="5000" placeholder="Describe the property, amenities, nearby facilities…"></textarea></div>
+        <div class="field full"><label for="pAmenities">Facilities / amenities (separate with commas)</label><textarea id="pAmenities" maxlength="2000" placeholder="e.g. Lift, Parking, Security, Gym, Swimming pool"></textarea></div>
       </div>
       <label class="check-field"><input id="pFeatured" type="checkbox"> Feature this property on the website</label>
       <div id="propertyFormMessage" class="message" role="status" aria-live="polite"></div>
@@ -113,7 +114,7 @@ async function loadEnquiries(){
 async function loadProperties(){
   const body=document.getElementById('propertiesBody');
   const {data,error}=await supabase.from('properties')
-    .select('id,title,description,location,property_type,listing_type,price,price_display,area_sqft,bedrooms,bathrooms,image_url,images,status,featured,created_at')
+    .select('id,title,description,location,property_type,listing_type,price,price_display,area_sqft,bedrooms,bathrooms,image_url,images,amenities,status,featured,created_at')
     .order('created_at',{ascending:false});
   if(error){
     body.innerHTML='<tr><td colspan="6" class="empty">Could not load properties. Check admin table permissions and RLS policies.</td></tr>';
@@ -203,6 +204,7 @@ function openPropertyForm(property=null){
     if(property.image_url&&!urls.includes(property.image_url)) urls.unshift(property.image_url);
     renderPhotoStrip('existingPhotos',urls);
     document.getElementById('pDescription').value=property.description||'';
+    document.getElementById('pAmenities').value=Array.isArray(property.amenities)?property.amenities.join(', '):'';
     document.getElementById('pFeatured').checked=!!property.featured;
   }
   document.getElementById('propertyForm').scrollIntoView({behavior:'smooth',block:'start'});
@@ -230,6 +232,7 @@ async function saveProperty(event){
     bathrooms:numericOrNull('pBathrooms'),
     status:document.getElementById('pStatus').value,
     description:document.getElementById('pDescription').value.trim()||null,
+    amenities:document.getElementById('pAmenities').value.split(',').map(item=>item.trim()).filter(Boolean),
     featured:document.getElementById('pFeatured').checked
   };
   try{

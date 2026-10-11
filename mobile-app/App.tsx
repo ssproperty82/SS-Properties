@@ -8,13 +8,13 @@ import {
   Platform,
   Pressable,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1094,7 +1094,8 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.app}>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.app}>
       <StatusBar style="light" />
       <View style={styles.topbar}>
         <Pressable style={styles.brand} onPress={() => setScreen('home')} accessibilityRole="button" accessibilityLabel="SS Properties home">
@@ -1126,7 +1127,8 @@ export default function App() {
         <NavItem label="Enquire" glyph="✉" active={screen === 'enquiry'} onPress={() => startEnquiry(null)} />
         <NavItem label={isOwner ? 'Owner' : 'Account'} glyph={isOwner ? '▦' : '●'} active={screen === 'account' || screen === 'owner'} onPress={() => navigate('account')} />
       </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

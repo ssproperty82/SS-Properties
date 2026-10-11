@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -8,6 +8,7 @@ import {
   Platform,
   Pressable,
   RefreshControl,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -276,7 +277,9 @@ export default function App() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginBusy, setLoginBusy] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [propertyFormOpen, setPropertyFormOpen] = useState(false);
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  const scrollRef = useRef<ScrollView | null>(null);
   const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
   const [removedPhotos, setRemovedPhotos] = useState<string[]>([]);
   const [newPhotos, setNewPhotos] = useState<ImagePicker.ImagePickerAsset[]>([]);
@@ -370,6 +373,10 @@ export default function App() {
       authListener.subscription.unsubscribe();
     };
   }, [loadProperties]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [screen, selectedProperty, ownerTab]);
 
   useEffect(() => {
     if (!isOwner || screen !== 'owner') return;
@@ -487,6 +494,7 @@ export default function App() {
 
   const beginAddProperty = () => {
     setEditingId(null);
+    setPropertyFormOpen(true);
     setDraft({ ...EMPTY_DRAFT });
     setExistingPhotos([]);
     setRemovedPhotos([]);
@@ -495,6 +503,7 @@ export default function App() {
   };
   const beginEditProperty = (property: Property) => {
     setEditingId(property.id);
+    setPropertyFormOpen(true);
     setDraft({
       title: property.title ?? '',
       location: property.location ?? '',
@@ -643,6 +652,7 @@ export default function App() {
       }
       Alert.alert('Property saved', 'Saved ' + allPhotos.length + ' photo(s) for ' + payload.title + '.' + (cleanupWarning ? '\n\nSome unused photo files may remain in storage.' : ''));
       setEditingId(null);
+      setPropertyFormOpen(false);
       setExistingPhotos([]);
       setRemovedPhotos([]);
       setNewPhotos([]);
@@ -805,7 +815,7 @@ export default function App() {
       <ActionButton label="＋ Choose photos" onPress={pickPhotos} secondary />
       <Text style={styles.helperText}>JPG, PNG, WebP, GIF or AVIF. Up to 10 MB per photo. A successful save updates the website too.</Text>
       <ActionButton label={formBusy ? 'Saving…' : 'Save listing'} onPress={saveProperty} disabled={formBusy} />
-      <ActionButton label="Cancel" onPress={() => { setEditingId(null); setDraft({ ...EMPTY_DRAFT }); setExistingPhotos([]); setRemovedPhotos([]); setNewPhotos([]); }} secondary />
+      <ActionButton label="Cancel" onPress={() => { setEditingId(null); setPropertyFormOpen(false); setDraft({ ...EMPTY_DRAFT }); setExistingPhotos([]); setRemovedPhotos([]); setNewPhotos([]); }} secondary />
     </View>
   );
 
@@ -1048,7 +1058,7 @@ export default function App() {
               </View>
             </View>
           ))}
-          {editingId !== null || (draft.title.length > 0 && !editingId) ? renderPropertyForm() : (
+          {propertyFormOpen ? renderPropertyForm() : (
             <View style={styles.addNudge}><Text style={styles.bodyCopy}>Add a listing to publish it on the website and in this app.</Text><ActionButton label="+ Add new property" onPress={beginAddProperty} /></View>
           )}
         </>
@@ -1072,7 +1082,7 @@ export default function App() {
   };
 
   return (
-    <View style={styles.app}>
+    <SafeAreaView style={styles.app}>
       <StatusBar style="light" />
       <View style={styles.topbar}>
         <Pressable style={styles.brand} onPress={() => setScreen('home')} accessibilityRole="button" accessibilityLabel="SS Properties home">
@@ -1083,6 +1093,7 @@ export default function App() {
       </View>
       {globalError ? <Pressable onPress={() => setGlobalError('')} style={styles.errorBanner}><Text style={styles.errorText}>{globalError}  ·  Tap to dismiss</Text></Pressable> : null}
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
@@ -1103,7 +1114,7 @@ export default function App() {
         <NavItem label="Enquire" glyph="✉" active={screen === 'enquiry'} onPress={() => startEnquiry(null)} />
         <NavItem label={isOwner ? 'Owner' : 'Account'} glyph={isOwner ? '▦' : '●'} active={screen === 'account' || screen === 'owner'} onPress={() => navigate('account')} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

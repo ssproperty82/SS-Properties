@@ -164,6 +164,16 @@ function asNullableNumber(value: string): number | null {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
+function asNullableInteger(value: string): number | null {
+  if (!value.trim()) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.round(number) : null;
+}
+function waPhone(value: string): string {
+  let digits = value.replace(/\D/g, '');
+  if (digits.length === 10) digits = '91' + digits;
+  return digits;
+}
 function normalizeLocation(value: string): string {
   return value.toLowerCase().replace(/\(w\)/g, ' west').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
 }
@@ -556,7 +566,9 @@ export default function App() {
   };
 
   const cleanupUnusedPhotos = async (urls: string[], currentPropertyId: string): Promise<boolean> => {
-    const candidates = Array.from(new Map(urls.map((url) => [url, storagePathFromUrl(url)]).filter((item) => Boolean(item[1]))));
+    const candidates = urls
+      .map((url) => ({ url, path: storagePathFromUrl(url) }))
+      .filter((item) => Boolean(item.path));
     if (!candidates.length) return false;
     const { data: otherProperties, error } = await supabase
       .from('properties')
@@ -568,7 +580,7 @@ export default function App() {
       if (property.image_url) referenced.add(property.image_url);
       normalizeImages(property.images).forEach((url) => referenced.add(url));
     });
-    const paths = candidates.filter(([url]) => !referenced.has(url)).map(([, path]) => path);
+    const paths = candidates.filter((item) => !referenced.has(item.url)).map((item) => item.path);
     if (!paths.length) return false;
     const { error: removeError } = await supabase.storage.from('property-images').remove(paths);
     return Boolean(removeError);
@@ -595,9 +607,9 @@ export default function App() {
       listing_type: draft.listing_type,
       price: asNullableNumber(draft.price),
       price_display: draft.price_display.trim() || null,
-      area_sqft: asNullableNumber(draft.area_sqft),
-      bedrooms: asNullableNumber(draft.bedrooms),
-      bathrooms: asNullableNumber(draft.bathrooms),
+      area_sqft: asNullableInteger(draft.area_sqft),
+      bedrooms: asNullableInteger(draft.bedrooms),
+      bathrooms: asNullableInteger(draft.bathrooms),
       description: draft.description.trim() || null,
       amenities: draft.amenities.split(',').map((item) => item.trim()).filter(Boolean),
       featured: draft.featured,
@@ -1031,7 +1043,7 @@ export default function App() {
               </View>
               <View style={styles.wrapRow}>
                 <ActionButton label="Call" secondary onPress={() => Linking.openURL('tel:' + enquiry.phone)} />
-                <ActionButton label="WhatsApp" secondary onPress={() => Linking.openURL('https://wa.me/' + enquiry.phone.replace(/\D/g, ''))} />
+                <ActionButton label="WhatsApp" secondary onPress={() => Linking.openURL('https://wa.me/' + waPhone(enquiry.phone))} />
                 <ActionButton label="Delete" danger secondary onPress={() => deleteEnquiry(enquiry)} />
               </View>
             </View>

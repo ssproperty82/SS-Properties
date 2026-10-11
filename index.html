@@ -35,6 +35,7 @@
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
+    .hero,.section{scroll-margin-top:92px}
     body{
       margin:0;
       font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -237,6 +238,8 @@
     }
     .property-tab.active{background:var(--gold);color:#09111a;border-color:var(--gold)}
     .property-count{font-size:9px;color:var(--muted-2)}
+    .heart[aria-pressed="true"]{color:var(--gold);background:rgba(7,16,26,.88);border-color:var(--gold)}
+    .heart:focus-visible,.property-tab:focus-visible,.gallery-arrow:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     .property-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
     .property-card{
       border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
@@ -613,10 +616,12 @@
         </div>
 
         <div class="filter-row">
-          <div class="property-tabs" id="propertyTabs">
-            <button class="property-tab active" data-purpose="all">All</button>
-            <button class="property-tab" data-purpose="sale">For Sale</button>
-            <button class="property-tab" data-purpose="rent">For Rent</button>
+          <div class="property-tabs" id="propertyTabs" aria-label="Filter property listings">
+            <button class="property-tab active" data-purpose="all" aria-pressed="true">All</button>
+            <button class="property-tab" data-purpose="sale" aria-pressed="false">For Sale</button>
+            <button class="property-tab" data-purpose="rent" aria-pressed="false">For Rent</button>
+            <button class="property-tab" data-purpose="commercial" aria-pressed="false">Commercial</button>
+            <button class="property-tab" data-purpose="saved" aria-pressed="false">♥ Saved</button>
           </div>
           <div class="property-count" id="propertyCount">4 properties</div>
         </div>
@@ -720,11 +725,11 @@
           <a href="#home">Home</a><a href="#properties">Properties</a><a href="#why-us">Why Us</a><a href="#process">How It Works</a><a href="#contact">Contact</a>
         </div>
         <div>
-          <div class="footer-social">
-            <a class="social" href="#" aria-label="Instagram">ig</a>
-            <a class="social" href="#" aria-label="Facebook">f</a>
-            <a class="social" href="#" aria-label="YouTube">▶</a>
-            <a class="social" href="#" aria-label="LinkedIn">in</a>
+          <div class="footer-social" aria-label="Contact shortcuts">
+            <a class="social" href="https://wa.me/919987268181" target="_blank" rel="noopener" aria-label="WhatsApp SS Properties">wa</a>
+            <a class="social" href="mailto:ssproperty82@gmail.com" aria-label="Email SS Properties">@</a>
+            <a class="social" href="tel:+919987268181" aria-label="Call SS Properties">☎</a>
+            <a class="social" href="#properties" aria-label="Browse properties">⌂</a>
           </div>
           <div class="copyright">© <span id="year"></span> SS Properties. All rights reserved.</div>
         </div>
@@ -767,6 +772,22 @@
     const count = document.getElementById('propertyCount');
     let activePurpose = 'all';
     let searchPurpose = 'sale';
+    const savedPropertyIds = (() => {
+      try {
+        const ids = JSON.parse(localStorage.getItem('ss-properties-saved') || '[]');
+        return new Set(Array.isArray(ids) ? ids.map(String) : []);
+      } catch (_) {
+        return new Set();
+      }
+    })();
+    function persistSavedPropertyIds() {
+      try {
+        localStorage.setItem('ss-properties-saved', JSON.stringify(Array.from(savedPropertyIds)));
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
 
     const defaultPropertyImages = {
       apartment:'https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=86',
@@ -794,7 +815,7 @@
       }catch(_){return fallback}
     }
     async function loadPublicProperties(){
-      const endpoint=SUPABASE_URL+'/rest/v1/properties?select=id,title,location,property_type,listing_type,price,price_display,area_sqft,bedrooms,bathrooms,image_url,images,featured,status,created_at&status=eq.available&order=featured.desc,created_at.desc';
+      const endpoint=SUPABASE_URL+'/rest/v1/properties?select=id,title,description,amenities,location,property_type,listing_type,price,price_display,area_sqft,bedrooms,bathrooms,image_url,images,featured,status,created_at&status=eq.available&order=featured.desc,created_at.desc';
       try{
         const response=await fetch(endpoint,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+SUPABASE_PUBLISHABLE_KEY}});
         if(!response.ok) throw new Error('Supabase returned HTTP '+response.status+': '+(await response.text()));
@@ -812,6 +833,10 @@
             title:row.title||'Property listing',
             location:row.location||'',
             price,
+            priceValue:row.price===null||row.price===undefined||row.price===''?null:Number(row.price),
+            bedrooms:row.bedrooms===null||row.bedrooms===undefined||row.bedrooms===''?null:Number(row.bedrooms),
+            description:row.description||'',
+            amenities:Array.isArray(row.amenities)?row.amenities.map(String):[],
             beds:row.bedrooms?row.bedrooms+' Beds':'',
             baths:row.bathrooms?row.bathrooms+' Baths':'',
             area:row.area_sqft?Number(row.area_sqft).toLocaleString('en-IN')+' sq.ft.':'',
@@ -846,7 +871,7 @@
             '<img data-card-image src="' + escapeHtml(photos[0]||p.image) + '" alt="' + escapeHtml(p.title) + '" loading="lazy" />' +
             '<span class="badge">' + badge + '</span>' +
             photoControls +
-            '<button class="heart" data-heart aria-label="Save property">♡</button>' +
+            '<button class="heart" data-heart aria-pressed="'+(savedPropertyIds.has(String(p.listingId||p.id||''))?'true':'false')+'" aria-label="'+(savedPropertyIds.has(String(p.listingId||p.id||''))?'Remove saved property':'Save property')+'">'+(savedPropertyIds.has(String(p.listingId||p.id||''))?'♥':'♡')+'</button>' +
           '</div>' +
           '<div class="property-content">' +
             '<div class="property-type">' + escapeHtml(p.typeLabel||p.type) + '</div>' +
@@ -861,7 +886,20 @@
       document.querySelectorAll('[data-heart]').forEach(btn => {
         btn.addEventListener('click', event => {
           event.stopPropagation();
-          btn.textContent = btn.textContent === '♡' ? '♥' : '♡';
+          const card = btn.closest('[data-open-property]');
+          const id = String(card?.dataset.openProperty || '');
+          if (!id) return;
+          if (savedPropertyIds.has(id)) savedPropertyIds.delete(id);
+          else savedPropertyIds.add(id);
+          const saved = savedPropertyIds.has(id);
+          btn.textContent = saved ? '♥' : '♡';
+          btn.setAttribute('aria-pressed', String(saved));
+          btn.setAttribute('aria-label', saved ? 'Remove saved property' : 'Save property');
+          const persisted = persistSavedPropertyIds();
+          showToast(saved
+            ? (persisted ? 'Property saved on this device.' : 'Property saved for this session.')
+            : 'Property removed from saved listings.');
+          if (activePurpose === 'saved' && !saved) applyPurposeFilter('saved');
         });
       });
       document.querySelectorAll('.property-card').forEach(card=>{
@@ -888,22 +926,61 @@
 
     function applyPurposeFilter(purpose){
       activePurpose = purpose;
-      const filtered = purpose === 'all' ? properties : properties.filter(p => p.purpose === purpose || (purpose === 'rent' && p.type === 'commercial' && p.purpose === 'rent'));
+      const filtered = purpose === 'all'
+        ? properties
+        : purpose === 'saved'
+          ? properties.filter(p => savedPropertyIds.has(String(p.listingId || p.id || '')))
+          : purpose === 'commercial'
+            ? properties.filter(p => p.purpose === 'commercial' || p.type === 'commercial')
+            : properties.filter(p => p.purpose === purpose);
+      document.querySelectorAll('#propertyTabs .property-tab').forEach(button => {
+        const active = button.dataset.purpose === purpose;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
       renderProperties(filtered);
     }
 
     document.querySelectorAll('#propertyTabs .property-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#propertyTabs .property-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        applyPurposeFilter(btn.dataset.purpose);
-      });
+      btn.addEventListener('click', () => applyPurposeFilter(btn.dataset.purpose));
     });
 
     function setSearchPurpose(purpose){
       searchPurpose = purpose;
       document.querySelectorAll('#searchPurpose button').forEach(b => b.classList.toggle('active', b.dataset.purpose === purpose));
       document.querySelectorAll('#heroPurposeTabs .purpose-tab').forEach(b => b.classList.toggle('active', b.dataset.purpose === purpose));
+      updateBudgetLabels(purpose);
+    }
+    function updateBudgetLabels(purpose){
+      const budget = document.getElementById('budget');
+      const labels = purpose === 'rent'
+        ? {all:'Any budget',low:'Under ₹25K/mo',mid:'₹25K – ₹75K/mo',high:'₹75K+/mo'}
+        : {all:'Any budget',low:'Under ₹50L',mid:'₹50L – ₹1.5Cr',high:'₹1.5Cr+'};
+      Array.from(budget.options).forEach(option => {
+        if (Object.prototype.hasOwnProperty.call(labels, option.value)) option.textContent = labels[option.value];
+      });
+    }
+    function normalizeSearchText(value){
+      return String(value || '').toLowerCase().replace(/\(w\)/g,' west').replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
+    }
+    function matchesBudget(price, range, purpose){
+      if (range === 'all') return true;
+      if (price === null || !Number.isFinite(price)) return false;
+      const low = purpose === 'rent' ? 25000 : 5000000;
+      const high = purpose === 'rent' ? 75000 : 15000000;
+      if (range === 'low') return price < low;
+      if (range === 'mid') return price >= low && price < high;
+      if (range === 'high') return price >= high;
+      return true;
+    }
+    function matchesFeature(property, feature){
+      if (feature === 'all') return true;
+      if (feature === '2bhk') return (Number.isFinite(property.bedrooms) && property.bedrooms >= 2) || /(^|\s)[2-9]\s*(bhk|bed|beds|bedroom|bedrooms)\b/i.test(property.title || '');
+      if (feature === '3bhk') return (Number.isFinite(property.bedrooms) && property.bedrooms >= 3) || /(^|\s)[3-9]\s*(bhk|bed|beds|bedroom|bedrooms)\b/i.test(property.title || '');
+      const searchable = normalizeSearchText([property.title, property.description, ...(property.amenities || [])].join(' '));
+      if (feature === 'parking') return /\bpark(ing)?\b|\bcar park\b/.test(searchable);
+      if (feature === 'furnished') return /\bfurnished\b|\bsemi furnished\b|\bfully furnished\b/.test(searchable);
+      return true;
     }
 
     document.querySelectorAll('#searchPurpose button,#heroPurposeTabs .purpose-tab').forEach(btn => {
@@ -913,15 +990,30 @@
     document.getElementById('propertySearch').addEventListener('submit', e => {
       e.preventDefault();
       const type = document.getElementById('propertyType').value;
+      const location = normalizeSearchText(document.getElementById('location').value);
+      const budget = document.getElementById('budget').value;
+      const feature = document.getElementById('features').value;
       const purpose = searchPurpose;
       const filtered = properties.filter(p => {
-        const purposeOK = purpose === 'commercial' ? p.type === 'commercial' : p.purpose === purpose;
+        const purposeOK = purpose === 'commercial'
+          ? (p.purpose === 'commercial' || p.type === 'commercial')
+          : p.purpose === purpose;
         const typeOK = type === 'all' || p.type === type;
-        return purposeOK && typeOK;
+        const propertyLocation = normalizeSearchText(p.location);
+        const locationOK = location === 'select location' || location === 'all' || propertyLocation.includes(location);
+        const budgetOK = matchesBudget(p.priceValue, budget, purpose);
+        const featureOK = matchesFeature(p, feature);
+        return purposeOK && typeOK && locationOK && budgetOK && featureOK;
+      });
+      activePurpose = purpose;
+      document.querySelectorAll('#propertyTabs .property-tab').forEach(button => {
+        const active = button.dataset.purpose === purpose;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
       });
       renderProperties(filtered);
       document.getElementById('properties').scrollIntoView({behavior:'smooth'});
-      showToast(filtered.length ? 'Showing matching properties.' : 'No exact matches yet — try a broader search.');
+      showToast(filtered.length ? 'Showing properties that match your filters.' : 'No exact matches. Try a broader location, budget or feature filter.');
     });
 
     // Theme: system by default, with saved manual selection.
@@ -943,6 +1035,7 @@
     let savedTheme = 'system';
     try { savedTheme = localStorage.getItem('ss-properties-theme') || 'system'; } catch (_) {}
     applyTheme(savedTheme);
+    updateBudgetLabels(searchPurpose);
 
     themeButtons.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1058,7 +1151,8 @@
     }
 
     document.getElementById('year').textContent = new Date().getFullYear();
-    renderProperties(properties);
+    count.textContent = 'Loading listings…';
+    grid.innerHTML = '<div style="grid-column:1/-1;padding:28px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13px">Loading available properties…</div>';
     loadPublicProperties();
   </script>
 </body>

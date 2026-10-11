@@ -56,6 +56,43 @@ const KEY='sb_publishable_o5agVKlb926eZvy45f16Lw_KxDkfos3';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const safeUrl=value=>{try{const u=new URL(String(value||''));return ['https:','http:'].includes(u.protocol)?u.href:''}catch(_){return ''}};
+function normalizeImageList(value){
+ if(Array.isArray(value))return value;
+ if(typeof value!=='string')return [];
+ const text=value.trim();
+ if(!text)return [];
+ try{const parsed=JSON.parse(text);if(Array.isArray(parsed))return parsed}catch(_){}
+ const matches=text.match(/https?:\/\/[^\s,{}"']+/g);
+ if(matches&&matches.length)return matches;
+ return [text.replace(/^\{+|\}+$/g,'').trim()].filter(Boolean);
+}
+function publicStorageUrl(path){
+ return URL+'/storage/v1/object/public/property-images/'+String(path).split('/').map(part=>encodeURIComponent(part)).join('/');
+}
+async function listPropertyStoragePhotos(id){
+ const prefix='properties/'+id+'/';
+ const files=[];
+ try{
+  for(let offset=0;offset<500;offset+=100){
+   const response=await fetch(URL+'/storage/v1/object/list/property-images',{
+    method:'POST',
+    headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({prefix,limit:100,offset,sortBy:{column:'name',order:'asc'}})
+   });
+   if(!response.ok)throw new Error('Storage photo lookup returned '+response.status);
+   const rows=await response.json();
+   for(const row of (Array.isArray(rows)?rows:[])){
+    if(!row||row.id===null||!row.name)continue;
+    const name=String(row.name);
+    const path=name.startsWith(prefix)?name:prefix+name;
+    if(!/\.(jpe?g|png|webp|gif|avif)$/i.test(path))continue;
+    files.push(publicStorageUrl(path));
+   }
+   if(!Array.isArray(rows)||rows.length<100)break;
+  }
+ }catch(error){console.warn('Could not list property-folder photos:',error)}
+ return files.map(safeUrl).filter(Boolean);
+}
 let photos=[],photoIndex=0,property=null;
 function money(p){return p.price_display||((p.price!==null&&p.price!==undefined)?'₹ '+Number(p.price).toLocaleString('en-IN'):'Price on request')}
 function fact(label,value){if(value===null||value===undefined||value==='')return '';return '<div class="fact"><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></div>'}
@@ -80,9 +117,10 @@ async function init(){
   const rows=await response.json();
   if(!rows.length){showError();return}
   property=rows[0];
-  photos=(Array.isArray(property.images)?property.images:[]).map(safeUrl).filter(Boolean);
   const main=safeUrl(property.image_url);
-  if(main&&!photos.includes(main))photos.unshift(main);
+  const databasePhotos=normalizeImageList(property.images).map(safeUrl).filter(Boolean);
+  const storedPhotos=await listPropertyStoragePhotos(property.id);
+  photos=Array.from(new Set([main,...databasePhotos,...storedPhotos].filter(Boolean)));
   if(!photos.length)photos=['https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1200&q=85'];
   $('title').textContent=property.title||'Property details';
   $('crumbTitle').textContent=property.title||'Details';

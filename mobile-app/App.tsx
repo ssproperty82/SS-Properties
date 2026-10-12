@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   Image,
   KeyboardAvoidingView,
   Linking,
+  Modal,
   Platform,
   Pressable,
   RefreshControl,
@@ -12,6 +14,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
   StatusBar as NativeStatusBar,
 } from 'react-native';
@@ -272,6 +275,10 @@ export default function App() {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [galleryVisible, setGalleryVisible] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const galleryRef = useRef<FlatList<string> | null>(null);
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [loadingProperties, setLoadingProperties] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -922,7 +929,18 @@ export default function App() {
           <ActionButton label="← Back to listings" secondary onPress={() => setScreen('home')} />
           <Text style={styles.detailEyebrow}>{selectedProperty.listing_type === 'rent' ? 'FOR RENT' : selectedProperty.listing_type === 'commercial' ? 'COMMERCIAL' : 'FOR SALE'}</Text>
         </View>
-        <Image source={{ uri: currentPhotos[index] }} style={styles.detailImage} />
+        <Pressable
+          onPress={() => { setGalleryIndex(index); setGalleryVisible(true); }}
+          accessibilityRole="button"
+          accessibilityLabel="Open full-screen property photo gallery"
+          style={styles.detailImagePressable}
+        >
+          <Image source={{ uri: currentPhotos[index] }} style={styles.detailImage} />
+          <View style={styles.expandPhotoHint}>
+            <Ionicons name="expand-outline" size={15} color={C.text} />
+            <Text style={styles.expandPhotoHintText}>Tap to enlarge</Text>
+          </View>
+        </Pressable>
         <View style={styles.galleryControls}>
           <ActionButton label="‹ Previous" secondary disabled={currentPhotos.length < 2} onPress={() => setPhotoIndex((index - 1 + currentPhotos.length) % currentPhotos.length)} />
           <Text style={styles.photoIndexText}>{index + 1} / {currentPhotos.length}</Text>
@@ -1129,6 +1147,94 @@ export default function App() {
         <NavItem label="Enquire" icon="mail-outline" active={screen === 'enquiry'} onPress={() => startEnquiry(null)} />
         <NavItem label={isOwner ? 'Owner' : 'Account'} icon={isOwner ? 'grid-outline' : 'person-circle-outline'} active={screen === 'account' || screen === 'owner'} onPress={() => navigate('account')} />
       </View>
+      <Modal
+        visible={galleryVisible && Boolean(selectedProperty)}
+        animationType="fade"
+        presentationStyle="fullScreen"
+        statusBarTranslucent
+        navigationBarTranslucent
+        onRequestClose={() => setGalleryVisible(false)}
+      >
+        <View style={styles.galleryModalRoot}>
+          <SafeAreaView edges={['top']} style={styles.galleryHeader}>
+            <Pressable
+              onPress={() => setGalleryVisible(false)}
+              style={styles.galleryCloseButton}
+              accessibilityRole="button"
+              accessibilityLabel="Close full-screen photo gallery"
+            >
+              <Ionicons name="close" size={28} color={C.text} />
+            </Pressable>
+            <View style={styles.galleryHeaderTitleWrap}>
+              <Text style={styles.galleryHeaderTitle} numberOfLines={1}>{selectedProperty?.title ?? 'Property photos'}</Text>
+              <Text style={styles.galleryHeaderSubtitle}>Swipe to view photos</Text>
+            </View>
+            <View style={styles.galleryCounter}>
+              <Text style={styles.galleryCounterText}>{galleryIndex + 1} / {selectedProperty ? Math.max(photoUrls(selectedProperty).length, 1) : 1}</Text>
+            </View>
+          </SafeAreaView>
+          {galleryVisible && selectedProperty ? (
+            <FlatList
+              key={selectedProperty.id}
+              ref={galleryRef}
+              data={photoUrls(selectedProperty).length ? photoUrls(selectedProperty) : [FALLBACK_IMAGE]}
+              horizontal
+              pagingEnabled
+              initialScrollIndex={Math.min(galleryIndex, Math.max(photoUrls(selectedProperty).length, 1) - 1)}
+              getItemLayout={(_, index) => ({ length: windowWidth, offset: windowWidth * index, index })}
+              keyExtractor={(url, index) => url + '-' + index}
+              showsHorizontalScrollIndicator={false}
+              style={styles.galleryPager}
+              renderItem={({ item, index: photoNo }) => (
+                <View style={[styles.galleryPage, { width: windowWidth, height: Math.max(windowHeight - 190, 260) }]}>
+                  <Image
+                    source={{ uri: item }}
+                    style={styles.galleryFullImage}
+                    resizeMode="contain"
+                    accessibilityLabel={(selectedProperty?.title ?? 'Property') + ', photo ' + (photoNo + 1)}
+                  />
+                </View>
+              )}
+              onMomentumScrollEnd={(event) => {
+                const nextIndex = Math.max(0, Math.min(
+                  Math.round(event.nativeEvent.contentOffset.x / Math.max(windowWidth, 1)),
+                  (photoUrls(selectedProperty).length ? photoUrls(selectedProperty).length : 1) - 1,
+                ));
+                setGalleryIndex(nextIndex);
+                setPhotoIndex(nextIndex);
+              }}
+              onScrollToIndexFailed={(info) => {
+                galleryRef.current?.scrollToOffset({ offset: info.index * windowWidth, animated: false });
+              }}
+            />
+          ) : null}
+          {selectedProperty && photoUrls(selectedProperty).length > 1 ? (
+            <SafeAreaView edges={['bottom']} style={styles.galleryThumbFooter}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.thumbStrip}>
+                {photoUrls(selectedProperty).map((url, photoNo) => (
+                  <Pressable
+                    key={url + '-' + photoNo}
+                    onPress={() => {
+                      setGalleryIndex(photoNo);
+                      setPhotoIndex(photoNo);
+                      galleryRef.current?.scrollToIndex({ index: photoNo, animated: true });
+                    }}
+                    style={[styles.thumbWrap, photoNo === galleryIndex && styles.thumbActive]}
+                    accessibilityRole="button"
+                    accessibilityLabel={'View photo ' + (photoNo + 1)}
+                  >
+                    <Image source={{ uri: url }} style={styles.thumbImage} />
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </SafeAreaView>
+          ) : (
+            <SafeAreaView edges={['bottom']} style={styles.gallerySingleFooter}>
+              <Text style={styles.galleryFooterHint}>SS PROPERTIES · PROPERTY GALLERY</Text>
+            </SafeAreaView>
+          )}
+        </View>
+      </Modal>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -1226,7 +1332,24 @@ const styles = StyleSheet.create({
   emptyCopy: { color: C.muted, fontSize: 12, textAlign: 'center', lineHeight: 19, marginTop: 8, marginBottom: 12 },
   detailTop: { paddingHorizontal: 16, paddingTop: 18, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   detailEyebrow: { color: C.gold, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
-  detailImage: { marginTop: 14, width: '100%', height: 280, resizeMode: 'cover', backgroundColor: C.card2 },
+  detailImagePressable: { marginTop: 14, position: 'relative', backgroundColor: C.card2 },
+  detailImage: { width: '100%', height: 280, resizeMode: 'cover', backgroundColor: C.card2 },
+  expandPhotoHint: { position: 'absolute', right: 12, bottom: 12, flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 18, backgroundColor: 'rgba(7,16,26,0.84)', borderWidth: 1, borderColor: C.line, paddingHorizontal: 10, paddingVertical: 7 },
+  expandPhotoHintText: { color: C.text, fontSize: 10, fontWeight: '800' },
+  galleryModalRoot: { flex: 1, backgroundColor: '#03070C' },
+  galleryHeader: { minHeight: 66, paddingHorizontal: 14, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#07101A', borderBottomWidth: 1, borderBottomColor: C.line },
+  galleryCloseButton: { width: 42, height: 42, borderRadius: 22, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: C.line, backgroundColor: C.card },
+  galleryHeaderTitleWrap: { flex: 1, gap: 3 },
+  galleryHeaderTitle: { color: C.text, fontSize: 13, fontWeight: '800' },
+  galleryHeaderSubtitle: { color: C.muted, fontSize: 10 },
+  galleryCounter: { minWidth: 48, paddingHorizontal: 9, paddingVertical: 7, alignItems: 'center', borderRadius: 16, borderColor: 'rgba(239,195,110,0.45)', borderWidth: 1 },
+  galleryCounterText: { color: C.gold, fontSize: 11, fontWeight: '900' },
+  galleryPager: { flex: 1 },
+  galleryPage: { justifyContent: 'center', alignItems: 'center', backgroundColor: '#03070C' },
+  galleryFullImage: { width: '100%', height: '100%' },
+  galleryThumbFooter: { backgroundColor: '#07101A', borderTopWidth: 1, borderTopColor: C.line },
+  gallerySingleFooter: { minHeight: 42, alignItems: 'center', justifyContent: 'center', backgroundColor: '#07101A' },
+  galleryFooterHint: { color: C.soft, fontSize: 9, fontWeight: '800', letterSpacing: 1.5 },
   galleryControls: { paddingHorizontal: 15, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginTop: 9 },
   photoIndexText: { color: C.muted, fontSize: 11, fontWeight: '700' },
   thumbStrip: { gap: 9, paddingHorizontal: 16, paddingVertical: 12 },

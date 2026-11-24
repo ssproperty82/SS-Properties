@@ -409,6 +409,7 @@
     }
     body.light .modal input,body.light .modal select,body.light .modal textarea{background:#f7f3eb}
     .modal textarea{resize:vertical}
+    .modal input:focus-visible,.modal select:focus-visible,.modal textarea:focus-visible,.modal-close:focus-visible,.modal button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     .modal-full{grid-column:1/-1}
     .toast{
       position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;
@@ -691,7 +692,7 @@
       <div class="container">
         <div class="about-grid">
           <figure class="about-visual">
-            <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=86" alt="Modern residential interior" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=86" alt="Modern home exterior" loading="lazy" />
             <figcaption class="about-visual-caption">
               <small>Homes • Spaces • Possibilities</small>
               <strong>A clearer way to<br/>explore property.</strong>
@@ -1226,23 +1227,47 @@
     const closeEnquiry = document.getElementById('closeEnquiry');
     const enquiryForm = document.getElementById('enquiryForm');
 
-    openEnquiry.addEventListener('click', () => modal.classList.add('show'));
-    closeEnquiry.addEventListener('click', () => modal.classList.remove('show'));
-    modal.addEventListener('click', e => { if(e.target === modal) modal.classList.remove('show'); });
+    let previouslyFocusedElement = null;
+    function openEnquiryModal(){
+      previouslyFocusedElement = document.activeElement;
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      modal.querySelector('input[name="name"]')?.focus();
+    }
+    function closeEnquiryModal(){
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      if(previouslyFocusedElement && typeof previouslyFocusedElement.focus === 'function'){
+        previouslyFocusedElement.focus();
+      }
+    }
+    openEnquiry.addEventListener('click', openEnquiryModal);
+    closeEnquiry.addEventListener('click', closeEnquiryModal);
+    modal.addEventListener('click', e => { if(e.target === modal) closeEnquiryModal(); });
+    modal.addEventListener('keydown', e => {
+      if(e.key !== 'Tab') return;
+      const focusable = Array.from(modal.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'))
+        .filter(element => !element.hidden);
+      if(!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if(e.shiftKey && document.activeElement === first){
+        e.preventDefault();
+        last.focus();
+      }else if(!e.shiftKey && document.activeElement === last){
+        e.preventDefault();
+        first.focus();
+      }
+    });
     document.addEventListener('keydown', e => {
       if(e.key === 'Escape'){
-        modal.classList.remove('show');
+        if(modal.classList.contains('show')) closeEnquiryModal();
         closeMobileNav();
       }
     });
 
     enquiryForm.addEventListener('submit', async e => {
       e.preventDefault();
-      const submitButton = e.target.querySelector('button[type="submit"]');
-      const originalText = submitButton.textContent;
-      submitButton.disabled = true;
-      submitButton.textContent = 'Sending…';
-
       const formData = new FormData(e.target);
       const enquiry = {
         name: String(formData.get('name') || '').trim(),
@@ -1253,11 +1278,16 @@
         message: String(formData.get('message') || '').trim()
       };
       const phoneDigits = enquiry.phone.replace(/\D/g, '');
-      if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+      if (!/^[+()\d\s-]+$/.test(enquiry.phone) || phoneDigits.length < 10 || phoneDigits.length > 15) {
         showToast('Please enter a valid phone number with 10–15 digits.');
         e.target.elements.phone.focus();
         return;
       }
+
+      const submitButton = e.target.querySelector('button[type="submit"]');
+      const originalText = submitButton.textContent;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending…';
 
       try {
         const response = await fetch(SUPABASE_URL + '/rest/v1/enquiries', {
@@ -1276,7 +1306,7 @@
           throw new Error(details || 'Unable to save enquiry');
         }
 
-        modal.classList.remove('show');
+        closeEnquiryModal();
         e.target.reset();
         showToast('Enquiry sent successfully. We’ll get back to you soon.');
       } catch (error) {

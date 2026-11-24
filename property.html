@@ -129,9 +129,9 @@ async function init(){
   $('location').textContent='⌖  '+(property.location||'Thane, Maharashtra');
   $('price').textContent=money(property);
   const listing=String(property.listing_type||'buy').toLowerCase();
-  $('listingBadge').textContent=listing==='rent'?'For Rent':listing==='commercial'?'Commercial':'For Sale';
+  $('listingBadge').textContent=(listing==='rent'||listing==='lease')?'For Rent':listing==='commercial'?'Commercial':'For Sale';
   $('facts').innerHTML=fact('Bedrooms',property.bedrooms?property.bedrooms+' BHK':'Not specified')+fact('Bathrooms',property.bathrooms)+fact('Area',property.area_sqft?Number(property.area_sqft).toLocaleString('en-IN')+' sq. ft.':'Not specified');
-  $('moreFacts').innerHTML=fact('Property type',property.property_type)+fact('Listing',listing==='rent'?'Rent':listing==='commercial'?'Commercial':'Sale')+fact('Location',property.location)+fact('Featured',property.featured?'Yes':'No');
+  $('moreFacts').innerHTML=fact('Property type',property.property_type)+fact('Listing',(listing==='rent'||listing==='lease')?'Rent':listing==='commercial'?'Commercial':'Sale')+fact('Location',property.location)+fact('Featured',property.featured?'Yes':'No');
   $('description').textContent=property.description||'Contact SS Properties to learn more about this listing and arrange a viewing.';
   const amenities=Array.isArray(property.amenities)?property.amenities.filter(Boolean):[];
   if(amenities.length){$('amenitiesCard').hidden=false;$('amenities').innerHTML=amenities.map(a=>'<div class="amenity"><span class="dot"></span>'+esc(a)+'</div>').join('')}

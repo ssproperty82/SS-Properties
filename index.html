@@ -306,6 +306,24 @@
     .story-card-content h3{font-family:'Playfair Display',serif;font-size:30px;line-height:1;margin:8px 0 12px}
     .story-link{display:inline-flex;gap:7px;align-items:center;color:#fff;text-decoration:none;font-size:9px;font-weight:700}
 
+    /* About */
+    .about{background:var(--bg)}
+    .about-grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(28px,5vw,72px);align-items:center}
+    .about-visual{min-height:430px;position:relative;border-radius:20px;overflow:hidden;background:var(--surface)}
+    .about-visual img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover}
+    .about-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,9,15,.04),rgba(3,9,15,.78))}
+    .about-visual-caption{position:absolute;left:28px;right:28px;bottom:26px;z-index:1}
+    .about-visual-caption small{display:block;color:var(--gold);font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    .about-visual-caption strong{display:block;font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,3vw,40px);line-height:1.02;margin-top:8px;color:#fff}
+    .about-copy h2{font-family:'Playfair Display',Georgia,serif;font-size:clamp(38px,4.2vw,58px);line-height:.98;letter-spacing:-.045em;margin:15px 0 20px}
+    .about-copy h2 span{color:var(--gold)}
+    .about-copy>p{max-width:620px;color:var(--muted);font-size:12px;line-height:1.8;margin:0 0 14px}
+    .about-points{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;margin:25px 0}
+    .about-point{border-top:1px solid var(--line);padding-top:12px}
+    .about-point strong{display:block;font-size:10px}
+    .about-point span{display:block;color:var(--muted-2);font-size:9px;line-height:1.6;margin-top:4px}
+    .about-cta{margin-top:2px}
+
     /* Process */
     .process{
       padding:70px 0;background:
@@ -446,6 +464,8 @@
       .hero-inner{grid-template-columns:1fr;padding-top:140px;padding-bottom:56px}
       .search-panel{max-width:520px}
       .why-grid{grid-template-columns:1fr}
+      .about-grid{grid-template-columns:1fr}
+      .about-visual{min-height:320px}
       .why-photo{height:300px;min-height:0}
       .story-card{display:block;min-height:300px}
       .process-top{display:block}
@@ -480,6 +500,8 @@
       .property-grid{grid-template-columns:1fr}
       .property-image{height:210px}
       .benefits{grid-template-columns:1fr}
+      .about-visual{min-height:260px}
+      .about-points{grid-template-columns:1fr}
       .contact-info{padding:25px}
       .contact-info h2{font-size:41px}
       .contact-details{grid-template-columns:1fr}
@@ -540,11 +562,11 @@
           </div>
 
           <div class="hero-proof">
-            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/></svg></span><div><strong>500+</strong><span>Happy Clients</span></div></div>
+            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/><path d="M9 7h1"/><path d="M14 7h1"/><path d="M9 11h1"/><path d="M14 11h1"/><path d="M9 15h1"/><path d="M14 15h1"/><path d="M10 21v-3h4v3"/></svg></span><div><strong>Residential</strong><span>Homes, apartments and plots</span></div></div>
             <div class="proof-divider"></div>
-            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/><path d="M9 7h1"/><path d="M14 7h1"/><path d="M9 11h1"/><path d="M14 11h1"/><path d="M9 15h1"/><path d="M14 15h1"/><path d="M10 21v-3h4v3"/></svg></span><div><strong>100+</strong><span>Properties Listed</span></div></div>
+            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-7h6v7"/></svg></span><div><strong>Commercial</strong><span>Spaces for business needs</span></div></div>
             <div class="proof-divider"></div>
-            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span><div><strong>10+</strong><span>Years of Experience</span></div></div>
+            <div class="proof"><span class="proof-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></span><div><strong>Personal support</strong><span>From enquiry to site visit</span></div></div>
           </div>
         </div>
 
@@ -639,16 +661,16 @@
             <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=86" alt="Premium modern home interior" loading="lazy" />
           </div>
 
-          <div class="why-copy" id="about">
+          <div class="why-copy">
             <div class="eyebrow">Why SS Properties</div>
             <h2>Property decisions<br/><span>made simpler.</span></h2>
             <p>We’re more than just property dealers — we’re your trusted partners in finding the right space, at the right time, with the right support.</p>
 
             <div class="benefits">
-              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Verified Properties</strong><span>Only genuine and verified listings.</span></div></div>
-              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/></svg></span><div><strong>Expert Guidance</strong><span>Practical support from enquiry to ownership.</span></div></div>
-              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><strong>Prime Locations</strong><span>Homes and spaces in high-growth areas.</span></div></div>
-              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m8 13 2 2 5-5"/></svg></span><div><strong>Transparent Process</strong><span>Clear information and no hidden surprises.</span></div></div>
+              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg></span><div><strong>Relevant Options</strong><span>Explore listings around your requirements.</span></div></div>
+              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/></svg></span><div><strong>Practical Guidance</strong><span>Support from first enquiry to next steps.</span></div></div>
+              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><strong>Location Choices</strong><span>Explore options in areas that matter to you.</span></div></div>
+              <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m8 13 2 2 5-5"/></svg></span><div><strong>Clear Process</strong><span>Understand the next step before moving forward.</span></div></div>
               <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 14v-3a9 9 0 0 1 18 0v3"/><path d="M5 14h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H6a3 3 0 0 1-3-3v-2a2 2 0 0 1 2-2Z"/><path d="M19 14h-2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1a3 3 0 0 0 3-3v-2a2 2 0 0 0-2-2Z"/></svg></span><div><strong>Dedicated Support</strong><span>One point of contact when you need it.</span></div></div>
               <div class="benefit"><span class="benefit-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></span><div><strong>Personal Guidance</strong><span>Advice tailored to your requirement.</span></div></div>
             </div>
@@ -658,8 +680,34 @@
             <div class="story-card-content">
               <small>Building better futures</small>
               <h3>More than<br/>just properties.</h3>
-              <a href="#contact" class="story-link">Learn about our story <span>→</span></a>
+              <a href="#about" class="story-link">Learn about our story <span>→</span></a>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about section" id="about">
+      <div class="container">
+        <div class="about-grid">
+          <figure class="about-visual">
+            <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=86" alt="Modern residential interior" loading="lazy" />
+            <figcaption class="about-visual-caption">
+              <small>Homes • Spaces • Possibilities</small>
+              <strong>A clearer way to<br/>explore property.</strong>
+            </figcaption>
+          </figure>
+          <div class="about-copy">
+            <div class="eyebrow">About SS Properties</div>
+            <h2>Finding the right space<br/><span>starts with the right guidance.</span></h2>
+            <p>SS Properties helps people explore homes, apartments, plots and commercial spaces for sale or rent in Thane and beyond.</p>
+            <p>Every requirement is different. We focus on understanding what matters to you, sharing relevant options and helping arrange site visits, so you can move forward with greater clarity.</p>
+            <div class="about-points">
+              <div class="about-point"><strong>Personal support</strong><span>A point of contact from your first enquiry.</span></div>
+              <div class="about-point"><strong>Clear next steps</strong><span>Understand options and plan a site visit.</span></div>
+              <div class="about-point"><strong>Different property needs</strong><span>Explore homes, plots and commercial spaces.</span></div>
+            </div>
+            <a class="button button-gold about-cta" href="#contact">Talk to SS Properties <span>→</span></a>
           </div>
         </div>
       </div>
@@ -698,7 +746,7 @@
           <div class="contact-info">
             <div class="eyebrow">Start a conversation</div>
             <h2>Let’s find your<br/><span>next space.</span></h2>
-            <p>Reach out for property details, availability, site visits or general enquiries. The contact details below are placeholders until you add your dad’s actual SS Properties information.</p>
+            <p>Reach out to discuss property details, current availability, site visits or any general enquiries. Use the contact options below to connect with SS Properties.</p>
 
             <div class="contact-actions">
               <a class="button button-gold" href="https://wa.me/919987268181" target="_blank" rel="noopener">☏ Chat on WhatsApp</a>
@@ -724,7 +772,7 @@
           <a class="brand" href="#home"><span class="brand-mark">SS</span><span><strong class="brand-name">SS Properties</strong><small class="brand-tag">Homes • Spaces • Possibilities</small></span></a>
         </div>
         <div class="footer-links">
-          <a href="#home">Home</a><a href="#properties">Properties</a><a href="#why-us">Why Us</a><a href="#process">How It Works</a><a href="#contact">Contact</a>
+          <a href="#home">Home</a><a href="#properties">Properties</a><a href="#why-us">Why Us</a><a href="#about">About</a><a href="#process">How It Works</a><a href="#contact">Contact</a>
         </div>
         <div>
           <div class="footer-social" aria-label="Contact shortcuts">
@@ -1204,6 +1252,12 @@
         property_type: String(formData.get('type') || '').trim(),
         message: String(formData.get('message') || '').trim()
       };
+      const phoneDigits = enquiry.phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+        showToast('Please enter a valid phone number with 10–15 digits.');
+        e.target.elements.phone.focus();
+        return;
+      }
 
       try {
         const response = await fetch(SUPABASE_URL + '/rest/v1/enquiries', {

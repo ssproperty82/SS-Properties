@@ -502,7 +502,7 @@
       </a>
 
       <nav class="main-nav" id="mainNav">
-        <a href="#home" class="active">Home</a>
+        <a href="#home" class="active" aria-current="location">Home</a>
         <a href="#properties">Properties</a>
         <a href="#why-us">Why Us</a>
         <a href="#process">How It Works</a>
@@ -1115,6 +1115,53 @@
       menuBtn.setAttribute('aria-label','Open menu');
     }
     mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
+
+    // Keep the header navigation in sync with the section currently in view.
+    // The header is fixed, so use a small top offset and select the last section
+    // whose top has crossed that line. This also works while scrolling upward.
+    const navLinks = Array.from(mainNav.querySelectorAll('a[href^="#"]'));
+    const navSections = navLinks
+      .map(link => document.getElementById(link.getAttribute('href').slice(1)))
+      .filter(Boolean);
+
+    function setActiveNav(sectionId){
+      navLinks.forEach(link => {
+        const isActive = link.getAttribute('href') === `#${sectionId}`;
+        link.classList.toggle('active', isActive);
+        if(isActive) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }
+
+    let navTicking = false;
+    function updateActiveNav(){
+      const header = document.querySelector('.site-header');
+      const activationLine = (header?.getBoundingClientRect().bottom || 0) + 24;
+      let currentSection = navSections[0];
+
+      for(const section of navSections){
+        if(section.getBoundingClientRect().top <= activationLine) currentSection = section;
+        else break;
+      }
+
+      if(currentSection) setActiveNav(currentSection.id);
+      navTicking = false;
+    }
+
+    function requestActiveNavUpdate(){
+      if(navTicking) return;
+      navTicking = true;
+      window.requestAnimationFrame(updateActiveNav);
+    }
+
+    window.addEventListener('scroll', requestActiveNavUpdate, {passive:true});
+    window.addEventListener('resize', requestActiveNavUpdate);
+    window.addEventListener('hashchange', () => {
+      const targetId = window.location.hash.slice(1);
+      if(navSections.some(section => section.id === targetId)) setActiveNav(targetId);
+      requestActiveNavUpdate();
+    });
+    requestActiveNavUpdate();
 
     // Search jump
     document.getElementById('focusSearch').addEventListener('click', () => {

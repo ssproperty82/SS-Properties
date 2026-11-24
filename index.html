@@ -1122,7 +1122,11 @@
     const navLinks = Array.from(mainNav.querySelectorAll('a[href^="#"]'));
     const navSections = navLinks
       .map(link => document.getElementById(link.getAttribute('href').slice(1)))
-      .filter(Boolean);
+      .filter(Boolean)
+      .sort((a, b) => {
+        if(a === b) return 0;
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
 
     function setActiveNav(sectionId){
       navLinks.forEach(link => {
